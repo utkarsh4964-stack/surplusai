@@ -1,0 +1,5 @@
+[
+  { "id": "vol_rahul", "name": "Rahul K.", "vehicle": "Bike", "speed_kmph": 25, "available": true },
+  { "id": "vol_priya", "name": "Priya S.", "vehicle": "Scooter", "speed_kmph": 30, "available": true },
+  { "id": "vol_amit", "name": "Amit V.", "vehicle": "Bike", "speed_kmph": 22, "available": true }
+]

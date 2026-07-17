@@ -1,0 +1,6 @@
+[
+  { "id": "ngo_hope", "name": "Hope Foundation", "distance_km": 1.8, "capacity": 50, "accepts": ["Veg Thali", "Mixed Meal", "Rice Bowl"], "lat": 28.5706, "lng": 77.3272 },
+  { "id": "ngo_asha", "name": "Asha Care Center", "distance_km": 2.0, "capacity": 100, "accepts": ["Veg Thali", "Rice Bowl", "Bakery Items"], "lat": 28.5812, "lng": 77.3410 },
+  { "id": "ngo_seva", "name": "Seva Kitchen Network", "distance_km": 6.4, "capacity": 30, "accepts": ["Mixed Meal", "Roti / Chapati"], "lat": 28.5501, "lng": 77.3009 },
+  { "id": "ngo_annadaan", "name": "Anna Daan Trust", "distance_km": 3.5, "capacity": 40, "accepts": ["Veg Thali", "Roti / Chapati"], "lat": 28.5900, "lng": 77.3550 }
+]

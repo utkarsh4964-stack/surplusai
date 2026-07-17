@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SurplusAI — Dispatch Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12160F;
+    --surface: #1B211A;
+    --surface-2: #232A21;
+    --line: #343E31;
+    --paper: #EFE9DC;
+    --text: #EDEAE4;
+    --text-dim: #9AA396;
+    --amber: #FFC857;
+    --flare: #FF5A2E;
+    --sage: #7FB069;
+    --danger: #E45858;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, #1a2117 0%, transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--flare); color:#12160F; }
+
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    border-bottom:1px solid var(--line);
+    background:rgba(18,22,15,0.9);
+    position:sticky; top:0; z-index:50;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:34px; height:34px;
+    background:var(--flare);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-weight:700; color:#12160F;
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+  }
+  .brand h1{ font-size:19px; font-weight:600; }
+  .brand span{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; }
+
+  .conn{ display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); }
+  .conn .dot{ width:7px; height:7px; border-radius:50%; background:var(--danger); }
+  .conn.live .dot{ background:var(--sage); box-shadow:0 0 6px var(--sage); }
+
+  nav{ display:flex; gap:2px; }
+  nav button{
+    background:transparent; border:1px solid transparent;
+    color:var(--text-dim); font-family:'IBM Plex Mono',monospace;
+    font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    padding:9px 16px; cursor:pointer; border-radius:var(--radius);
+    transition:all .15s;
+  }
+  nav button:hover{ color:var(--text); border-color:var(--line); }
+  nav button.active{ background:var(--surface-2); color:var(--amber); border-color:var(--line); }
+
+  .topbar-right{ display:flex; align-items:center; gap:20px; }
+
+  main{ max-width:1280px; margin:0 auto; padding:28px; }
+  .view{ display:none; animation:fade .25s ease; }
+  .view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.14em; color:var(--flare); text-transform:uppercase; margin-bottom:6px;}
+  .page-title{ font-size:30px; margin-bottom:26px; }
+
+  .grid{ display:grid; gap:18px; }
+  .grid-2{ grid-template-columns: 1fr 1fr; }
+  .grid-restaurant{ grid-template-columns: 380px 1fr; }
+  @media (max-width:900px){ .grid-2, .grid-restaurant{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+  .card h3{ font-size:14px; color:var(--text-dim); margin-bottom:16px; display:flex; align-items:center; gap:8px;}
+
+  label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px; margin-top:16px; }
+  label:first-child{ margin-top:0; }
+  input, select{
+    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    padding:10px 12px; border-radius:var(--radius); font-family:'IBM Plex Sans',sans-serif; font-size:14px;
+  }
+  input:focus, select:focus{ outline:none; border-color:var(--amber); }
+  .checkline{ display:flex; align-items:center; gap:8px; margin-top:16px; }
+  .checkline input{ width:auto; }
+  .checkline label{ margin:0; }
+
+  .upload-box{
+    margin-top:16px; border:1px dashed var(--line); border-radius:var(--radius);
+    padding:16px; text-align:center; cursor:pointer; position:relative; overflow:hidden;
+  }
+  .upload-box img{ max-width:100%; max-height:140px; border-radius:var(--radius); }
+  .upload-box p{ font-size:12px; color:var(--text-dim); }
+
+  .btn{
+    width:100%; margin-top:20px; padding:13px; border:none; border-radius:var(--radius);
+    background:var(--flare); color:#12160F; font-family:'Oswald',sans-serif; font-weight:600;
+    letter-spacing:0.05em; text-transform:uppercase; font-size:14px; cursor:pointer;
+    transition:transform .1s, filter .15s;
+  }
+  .btn:hover{ filter:brightness(1.08); }
+  .btn:active{ transform:scale(0.98); }
+  .btn:disabled{ background:var(--line); color:var(--text-dim); cursor:not-allowed; }
+
+  .err-banner{
+    display:none; margin-top:14px; padding:10px 12px; border:1px solid var(--danger);
+    border-radius:var(--radius); background:rgba(228,88,88,0.08); color:var(--danger);
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.5;
+  }
+  .err-banner.show{ display:block; }
+
+  .manifest{
+    background:
+      repeating-linear-gradient(to bottom, transparent, transparent 39px, var(--line) 40px);
+    min-height:120px;
+  }
+  .ticket-empty{ color:var(--text-dim); font-family:'IBM Plex Mono',monospace; font-size:13px; padding:30px 0; text-align:center; }
+
+  .step{
+    display:grid; grid-template-columns:26px 150px 1fr 90px; align-items:start; gap:14px;
+    padding:11px 0; opacity:0; transform:translateX(-6px);
+    animation:stepIn .35s forwards;
+  }
+  @keyframes stepIn{ to{opacity:1; transform:none;} }
+  .step-dot{
+    width:10px; height:10px; border-radius:50%; margin-top:4px;
+    background:var(--line); box-shadow:0 0 0 3px var(--surface);
+  }
+  .step.ok .step-dot{ background:var(--sage); }
+  .step.warn .step-dot{ background:var(--amber); }
+  .step.fail .step-dot{ background:var(--danger); }
+  .step-agent{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.05em; color:var(--amber); text-transform:uppercase; }
+  .step-detail{ font-size:13.5px; line-height:1.5; }
+  .step-detail b{ color:var(--paper); }
+  .step-stamp{
+    justify-self:end; font-family:'Oswald',sans-serif; font-size:10px; font-weight:600;
+    letter-spacing:0.08em; text-transform:uppercase; padding:3px 8px; border-radius:2px;
+    transform:rotate(-3deg); white-space:nowrap;
+  }
+  .stamp-ok{ color:var(--sage); border:1.5px solid var(--sage); }
+  .stamp-warn{ color:var(--amber); border:1.5px solid var(--amber); }
+  .stamp-fail{ color:var(--danger); border:1.5px solid var(--danger); }
+
+  .decision-box{ margin-top:18px; border-top:1px dashed var(--line); padding-top:16px; display:none; }
+  .decision-box.show{ display:block; }
+  .ngo-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:9px 12px; border:1px solid var(--line); border-radius:var(--radius); margin-bottom:6px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px;
+  }
+  .ngo-row.winner{ border-color:var(--sage); background:rgba(127,176,105,0.08); }
+  .ngo-score{ color:var(--amber); font-weight:600; }
+  .ngo-detail{ font-size:10.5px; color:var(--text-dim); margin-top:2px; }
+
+  .impact-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+  @media (max-width:700px){ .impact-grid{ grid-template-columns:1fr 1fr; } }
+  .impact-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; }
+  .impact-card .num{ font-family:'Oswald',sans-serif; font-size:32px; color:var(--amber); }
+  .impact-card .lbl{ font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-top:4px; }
+
+  .agent-lights{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:20px; }
+  .light{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px 10px; text-align:center; }
+  .light .dot{ width:8px; height:8px; border-radius:50%; background:var(--line); margin:0 auto 8px; }
+  .light.active .dot{ background:var(--amber); box-shadow:0 0 8px var(--amber); }
+  .light.done .dot{ background:var(--sage); }
+  .light.fail .dot{ background:var(--danger); }
+  .light .name{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); }
+
+  .map-wrap{ position:relative; height:280px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--surface-2); }
+  .pin{ position:absolute; transform:translate(-50%,-100%); text-align:center; }
+  .pin .dot{ width:12px; height:12px; border-radius:50%; margin:0 auto; border:2px solid var(--bg); }
+  .pin .tag{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--text-dim); margin-top:3px; white-space:nowrap; }
+  .route-line{ position:absolute; height:2px; background:repeating-linear-gradient(to right, var(--flare) 0 6px, transparent 6px 11px); transform-origin:left center; }
+
+  .log-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px; }
+  .log-row:last-child{ border-bottom:none; }
+  .log-time{ font-family:'IBM Plex Mono',monospace; color:var(--text-dim); font-size:11px; }
+
+  .portal-note{ font-size:13px; color:var(--text-dim); line-height:1.6; }
+  .badge{ display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; padding:3px 8px; border-radius:2px; border:1px solid var(--line); color:var(--text-dim); margin-right:6px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">S</div>
+    <div>
+      <h1>SurplusAI</h1>
+      <span>Dispatch Console · Live Backend</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="conn" id="connStatus"><div class="dot"></div><span id="connLabel">Checking API…</span></div>
+    <nav>
+      <button class="tab-btn active" data-view="restaurant">Restaurant</button>
+      <button class="tab-btn" data-view="ngo">NGO</button>
+      <button class="tab-btn" data-view="volunteer">Volunteer</button>
+      <button class="tab-btn" data-view="admin">Admin</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== RESTAURANT VIEW ===================== -->
+  <section class="view active" id="view-restaurant">
+    <div class="eyebrow">Restaurant Portal</div>
+    <h2 class="page-title">Log a donation</h2>
+
+    <div class="grid grid-restaurant">
+      <div class="card">
+        <h3>New Donation Ticket</h3>
+
+        <label>Food type</label>
+        <select id="foodType">
+          <option value="Veg Thali">Veg Thali</option>
+          <option value="Roti / Chapati">Roti / Chapati</option>
+          <option value="Rice Bowl">Rice Bowl</option>
+          <option value="Mixed Meal">Mixed Meal</option>
+          <option value="Bakery Items">Bakery Items</option>
+          <option value="Packaged Snacks">Packaged Snacks</option>
+        </select>
+
+        <label>Quantity (meals / units)</label>
+        <input type="number" id="quantity" value="40" min="1">
+
+        <label>Pickup before</label>
+        <input type="time" id="pickupTime" value="22:00">
+
+        <label>Photo of food (optional — feeds the Quality Agent)</label>
+        <div class="upload-box" id="uploadBox">
+          <p id="uploadHint">Click to upload a photo</p>
+          <input type="file" id="fileInput" accept="image/*" style="display:none">
+        </div>
+
+        <div class="checkline">
+          <input type="checkbox" id="forceReject">
+          <label style="margin:0" for="forceReject">Force quality rejection (demo branch)</label>
+        </div>
+
+        <button class="btn" id="donateBtn">Donate</button>
+        <div class="err-banner" id="errBanner"></div>
+      </div>
+
+      <div class="card">
+        <h3>Live Agent Pipeline <span class="badge" style="margin-left:auto" id="ticketBadge"></span></h3>
+        <div class="manifest" id="pipeline">
+          <div class="ticket-empty">No active ticket. Submit a donation to watch the AI workforce coordinate it in real time via the backend API.</div>
+        </div>
+
+        <div class="decision-box" id="decisionBox">
+          <h3 style="margin-bottom:10px;">Why did AI choose this NGO?</h3>
+          <div id="ngoBreakdown"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== NGO VIEW ===================== -->
+  <section class="view" id="view-ngo">
+    <div class="eyebrow">NGO Portal</div>
+    <h2 class="page-title">Incoming donations</h2>
+    <div class="card">
+      <h3>Session Feed</h3>
+      <p class="portal-note">Read-only demo view. Every donation the Matching Agent routes appears here, sourced from the same backend response as the Restaurant pipeline.</p>
+      <div id="ngoFeed" style="margin-top:16px;"><div class="portal-note">No donations yet this session.</div></div>
+    </div>
+  </section>
+
+  <!-- ===================== VOLUNTEER VIEW ===================== -->
+  <section class="view" id="view-volunteer">
+    <div class="eyebrow">Volunteer Portal</div>
+    <h2 class="page-title">Delivery tasks</h2>
+    <div class="card">
+      <h3>Assigned Runs — Session Feed</h3>
+      <p class="portal-note">Mirrors what the Route Agent assigns on the backend.</p>
+      <div id="volFeed" style="margin-top:16px;"><div class="portal-note">No tasks yet this session.</div></div>
+    </div>
+  </section>
+
+  <!-- ===================== ADMIN VIEW ===================== -->
+  <section class="view" id="view-admin">
+    <div class="eyebrow">Admin Command Center</div>
+    <h2 class="page-title">Live operations</h2>
+
+    <div class="impact-grid">
+      <div class="impact-card"><div class="num" id="statMeals">0</div><div class="lbl">Meals rescued</div></div>
+      <div class="impact-card"><div class="num" id="statPeople">0</div><div class="lbl">People fed</div></div>
+      <div class="impact-card"><div class="num" id="statWaste">0<span style="font-size:16px">kg</span></div><div class="lbl">Food waste prevented</div></div>
+      <div class="impact-card"><div class="num" id="statCO2">0<span style="font-size:16px">kg</span></div><div class="lbl">CO₂ avoided</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <h3>Agent Status</h3>
+      <div class="agent-lights" id="agentLights"></div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Live Map</h3>
+        <div class="map-wrap" id="mapWrap"></div>
+      </div>
+      <div class="card">
+        <h3>Donation Log</h3>
+        <div id="donationLog"><div class="portal-note">No donations logged yet this session.</div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ============================================================
+   API CONFIG — points at the FastAPI backend (backend/main.py).
+   Run it locally with:  uvicorn main:app --reload --port 8000
+   ============================================================ */
+const API_BASE = "http://127.0.0.1:8000";
+
+/* map layout is a client-side visual convenience only — real
+   lat/lng comes from the backend /ngos response */
+const MAP_LAYOUT = {
+  "ngo_hope": { x:62, y:38 },
+  "ngo_asha": { x:78, y:60 },
+  "ngo_seva": { x:20, y:70 },
+  "ngo_annadaan": { x:40, y:22 },
+};
+const RESTAURANT_POS = { x:50, y:88 };
+
+let NGOS_CACHE = [];
+
+/* ============ CONNECTION CHECK ============ */
+async function checkConnection(){
+  const el = document.getElementById('connStatus');
+  const label = document.getElementById('connLabel');
+  try{
+    const res = await fetch(API_BASE + '/health');
+    if(!res.ok) throw new Error('bad status');
+    el.classList.add('live');
+    label.textContent = 'Backend connected';
+    NGOS_CACHE = await (await fetch(API_BASE + '/ngos')).json();
+    renderMap();
+    const impact = await (await fetch(API_BASE + '/impact')).json();
+    applyImpactTotals(impact);
+  }catch(e){
+    el.classList.remove('live');
+    label.textContent = 'Backend offline — run uvicorn main:app --port 8000';
+  }
+}
+checkConnection();
+setInterval(checkConnection, 8000);
+
+/* ============ NAV ============ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  });
+});
+
+/* ============ IMAGE UPLOAD ============ */
+const uploadBox = document.getElementById('uploadBox');
+const fileInput = document.getElementById('fileInput');
+let uploadedImageBase64 = null;
+uploadBox.addEventListener('click', ()=>fileInput.click());
+fileInput.addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    uploadedImageBase64 = ev.target.result;
+    uploadBox.innerHTML = `<img src="${ev.target.result}" alt="food photo">`;
+  };
+  reader.readAsDataURL(f);
+});
+
+/* ============ AGENT LIGHTS ============ */
+const AGENT_NAMES = ["Donation","Quality","Expiry","Matching","Routing","Notify","Impact"];
+function buildLights(){
+  document.getElementById('agentLights').innerHTML =
+    AGENT_NAMES.map(n=>`<div class="light" data-agent="${n}"><div class="dot"></div><div class="name">${n}</div></div>`).join('');
+}
+buildLights();
+function resetLights(){ document.querySelectorAll('.light').forEach(l=>l.classList.remove('active','done','fail')); }
+function setLight(name, state){
+  const el = document.querySelector(`.light[data-agent="${name}"]`);
+  if(el){ el.classList.remove('active','done','fail'); el.classList.add(state); }
+}
+
+/* ============ MAP ============ */
+function renderMap(winnerId){
+  const wrap = document.getElementById('mapWrap');
+  wrap.innerHTML = '';
+  const addPin = (x,y,color,label)=>{
+    const p = document.createElement('div');
+    p.className='pin'; p.style.left=x+'%'; p.style.top=y+'%';
+    p.innerHTML = `<div class="dot" style="background:${color}"></div><div class="tag">${label}</div>`;
+    wrap.appendChild(p);
+  };
+  addPin(RESTAURANT_POS.x, RESTAURANT_POS.y, 'var(--flare)', 'Restaurant');
+  NGOS_CACHE.forEach(n=>{
+    const pos = MAP_LAYOUT[n.id] || {x:50,y:50};
+    addPin(pos.x, pos.y, (winnerId && n.id===winnerId) ? 'var(--sage)' : 'var(--line)', n.name);
+  });
+  if(winnerId){
+    const pos = MAP_LAYOUT[winnerId];
+    if(pos){
+      const dx = pos.x - RESTAURANT_POS.x, dy = pos.y - RESTAURANT_POS.y;
+      const len = Math.sqrt(dx*dx+dy*dy);
+      const angle = Math.atan2(dy,dx)*180/Math.PI;
+      const line = document.createElement('div');
+      line.className='route-line';
+      line.style.left = RESTAURANT_POS.x+'%';
+      line.style.top = RESTAURANT_POS.y+'%';
+      line.style.width = len+'%';
+      line.style.transform = `rotate(${angle}deg)`;
+      wrap.appendChild(line);
+    }
+  }
+}
+
+/* ============ HELPERS ============ */
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function addStep(container, {agent, cls, detail, stamp, stampCls}){
+  const div = document.createElement('div');
+  div.className = `step ${cls}`;
+  div.innerHTML = `
+    <div class="step-dot"></div>
+    <div class="step-agent">${agent}</div>
+    <div class="step-detail">${detail}</div>
+    <div class="step-stamp ${stampCls}">${stamp}</div>
+  `;
+  container.appendChild(div);
+}
+const CLS_MAP = { ok:['ok','stamp-ok'], warn:['warn','stamp-warn'], fail:['fail','stamp-fail'] };
+const LIGHT_MAP = { ok:'done', warn:'done', fail:'fail' };
+
+/* ============ MAIN DONATE FLOW — calls the real backend ============ */
+document.getElementById('donateBtn').addEventListener('click', runDonation);
+
+async function runDonation(){
+  const btn = document.getElementById('donateBtn');
+  const errBanner = document.getElementById('errBanner');
+  errBanner.classList.remove('show');
+  btn.disabled = true;
+  resetLights();
+
+  const pipeline = document.getElementById('pipeline');
+  pipeline.innerHTML = '';
+  document.getElementById('decisionBox').classList.remove('show');
+
+  const body = {
+    food_type: document.getElementById('foodType').value,
+    quantity: parseInt(document.getElementById('quantity').value) || 1,
+    pickup_time: document.getElementById('pickupTime').value,
+    force_reject: document.getElementById('forceReject').checked,
+    image_base64: uploadedImageBase64,
+  };
+
+  let result;
+  try{
+    const res = await fetch(API_BASE + '/donate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body),
+    });
+    if(!res.ok) throw new Error('Backend returned ' + res.status);
+    result = await res.json();
+  }catch(e){
+    errBanner.textContent = 'Could not reach backend at ' + API_BASE + '. Start it with: uvicorn main:app --port 8000 (from /backend).';
+    errBanner.classList.add('show');
+    btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('ticketBadge').textContent = result.ticket_id || '';
+
+  // replay the trace with staggered animation so it reads as "live"
+  const agentToLight = { "Donation Agent":"Donation", "Quality Agent":"Quality", "Expiry Agent":"Expiry",
+                          "Matching Agent":"Matching", "Route Agent":"Routing", "Notification Agent":"Notify",
+                          "Impact Agent":"Impact" };
+
+  for(const step of result.steps){
+    const [stepCls, stampCls] = CLS_MAP[step.status] || CLS_MAP.ok;
+    const lightName = agentToLight[step.agent];
+    if(lightName) setLight(lightName, 'active');
+    await sleep(550);
+    addStep(pipeline, { agent: step.agent, cls: stepCls, detail: step.detail, stamp: step.stamp, stampCls });
+    if(lightName) setLight(lightName, LIGHT_MAP[step.status] || 'done');
+
+    // reveal decision timeline right after Matching Agent step
+    if(step.agent === 'Matching Agent' && result.matching && result.matching.ranked){
+      showDecisionTimeline(result.matching.ranked);
+      renderMap(result.matching.winner.id);
+    }
+    await sleep(250);
+  }
+
+  if(result.status === 'completed'){
+    applyImpactTotals(result.impact.session_totals);
+    logDonation(result);
+    addFeed(result);
+  }
+
+  btn.disabled = false;
+}
+
+function showDecisionTimeline(ranked){
+  const dbox = document.getElementById('decisionBox');
+  const bd = document.getElementById('ngoBreakdown');
+  bd.innerHTML = ranked.map((n,i)=>`
+    <div class="ngo-row ${i===0?'winner':''}">
+      <div>
+        <div>${i===0?'🏆 ':''}${n.name} — ${n.distance_km} km</div>
+        <div class="ngo-detail">need ${n.need_match} · proximity ${n.proximity} · capacity ${n.capacity_fit} · urgency ${n.urgency_bonus}</div>
+      </div>
+      <span class="ngo-score">score ${n.score}</span>
+    </div>`).join('');
+  dbox.classList.add('show');
+}
+
+/* ============ IMPACT COUNTERS ============ */
+function animateNum(el, from, to, suffix=''){
+  const dur = 600, start = performance.now();
+  function step(t){
+    const p = Math.min(1, (t-start)/dur);
+    const val = Math.round(from + (to-from)*p);
+    el.textContent = val + suffix;
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+let lastTotals = {meals:0, people:0, waste_kg:0, co2_kg:0};
+function applyImpactTotals(totals){
+  animateNum(document.getElementById('statMeals'), lastTotals.meals, totals.meals);
+  animateNum(document.getElementById('statPeople'), lastTotals.people, totals.people);
+  animateNum(document.getElementById('statWaste'), lastTotals.waste_kg, totals.waste_kg, 'kg');
+  animateNum(document.getElementById('statCO2'), lastTotals.co2_kg, totals.co2_kg, 'kg');
+  lastTotals = totals;
+}
+
+/* ============ LOG / FEEDS ============ */
+function logDonation(result){
+  const log = document.getElementById('donationLog');
+  if(log.querySelector('.portal-note')) log.innerHTML = '';
+  const row = document.createElement('div');
+  row.className = 'log-row';
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  row.innerHTML = `<span>${result.ticket_id} · ${result.donation.quantity} × ${result.donation.food_type} → ${result.matching.winner.name}</span><span class="log-time">${now}</span>`;
+  log.prepend(row);
+}
+function addFeed(result){
+  const ngoFeed = document.getElementById('ngoFeed');
+  if(ngoFeed.querySelector('.portal-note')) ngoFeed.innerHTML='';
+  const row = document.createElement('div');
+  row.className='log-row';
+  row.innerHTML = `<span><span class="badge">${result.ticket_id}</span>${result.donation.quantity} × ${result.donation.food_type} arriving from Restaurant</span><span class="log-time">via ${result.routing.volunteer.name}</span>`;
+  ngoFeed.prepend(row);
+
+  const volFeed = document.getElementById('volFeed');
+  if(volFeed.querySelector('.portal-note')) volFeed.innerHTML='';
+  const vrow = document.createElement('div');
+  vrow.className='log-row';
+  vrow.innerHTML = `<span><span class="badge">${result.ticket_id}</span>Deliver ${result.donation.quantity} × ${result.donation.food_type} to ${result.matching.winner.name}</span><span class="log-time">ETA ${result.routing.eta_minutes} min</span>`;
+  volFeed.prepend(vrow);
+}
+</script>
+</body>
+</html>
