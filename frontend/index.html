@@ -5,202 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SurplusAI — Dispatch Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #12160F;
-    --surface: #1B211A;
-    --surface-2: #232A21;
-    --line: #343E31;
-    --paper: #EFE9DC;
-    --text: #EDEAE4;
-    --text-dim: #9AA396;
-    --amber: #FFC857;
-    --flare: #FF5A2E;
-    --sage: #7FB069;
-    --danger: #E45858;
-    --radius: 3px;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{height:100%;}
-  body{
-    background:
-      radial-gradient(circle at 15% 0%, #1a2117 0%, transparent 45%),
-      var(--bg);
-    color:var(--text);
-    font-family:'IBM Plex Sans', sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  ::selection{ background:var(--flare); color:#12160F; }
-
-  h1,h2,h3,.display{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.03em;
-  }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
-
-  header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:18px 28px;
-    border-bottom:1px solid var(--line);
-    background:rgba(18,22,15,0.9);
-    position:sticky; top:0; z-index:50;
-  }
-  .brand{ display:flex; align-items:center; gap:12px; }
-  .brand-mark{
-    width:34px; height:34px;
-    background:var(--flare);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Oswald',sans-serif; font-weight:700; color:#12160F;
-    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
-  }
-  .brand h1{ font-size:19px; font-weight:600; }
-  .brand span{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; }
-
-  .conn{ display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); }
-  .conn .dot{ width:7px; height:7px; border-radius:50%; background:var(--danger); }
-  .conn.live .dot{ background:var(--sage); box-shadow:0 0 6px var(--sage); }
-
-  nav{ display:flex; gap:2px; }
-  nav button{
-    background:transparent; border:1px solid transparent;
-    color:var(--text-dim); font-family:'IBM Plex Mono',monospace;
-    font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-    padding:9px 16px; cursor:pointer; border-radius:var(--radius);
-    transition:all .15s;
-  }
-  nav button:hover{ color:var(--text); border-color:var(--line); }
-  nav button.active{ background:var(--surface-2); color:var(--amber); border-color:var(--line); }
-
-  .topbar-right{ display:flex; align-items:center; gap:20px; }
-
-  main{ max-width:1280px; margin:0 auto; padding:28px; }
-  .view{ display:none; animation:fade .25s ease; }
-  .view.active{ display:block; }
-  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
-
-  .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.14em; color:var(--flare); text-transform:uppercase; margin-bottom:6px;}
-  .page-title{ font-size:30px; margin-bottom:26px; }
-
-  .grid{ display:grid; gap:18px; }
-  .grid-2{ grid-template-columns: 1fr 1fr; }
-  .grid-restaurant{ grid-template-columns: 380px 1fr; }
-  @media (max-width:900px){ .grid-2, .grid-restaurant{ grid-template-columns:1fr; } }
-
-  .card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:22px;
-  }
-  .card h3{ font-size:14px; color:var(--text-dim); margin-bottom:16px; display:flex; align-items:center; gap:8px;}
-
-  label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px; margin-top:16px; }
-  label:first-child{ margin-top:0; }
-  input, select{
-    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
-    padding:10px 12px; border-radius:var(--radius); font-family:'IBM Plex Sans',sans-serif; font-size:14px;
-  }
-  input:focus, select:focus{ outline:none; border-color:var(--amber); }
-  .checkline{ display:flex; align-items:center; gap:8px; margin-top:16px; }
-  .checkline input{ width:auto; }
-  .checkline label{ margin:0; }
-
-  .upload-box{
-    margin-top:16px; border:1px dashed var(--line); border-radius:var(--radius);
-    padding:16px; text-align:center; cursor:pointer; position:relative; overflow:hidden;
-  }
-  .upload-box img{ max-width:100%; max-height:140px; border-radius:var(--radius); }
-  .upload-box p{ font-size:12px; color:var(--text-dim); }
-
-  .btn{
-    width:100%; margin-top:20px; padding:13px; border:none; border-radius:var(--radius);
-    background:var(--flare); color:#12160F; font-family:'Oswald',sans-serif; font-weight:600;
-    letter-spacing:0.05em; text-transform:uppercase; font-size:14px; cursor:pointer;
-    transition:transform .1s, filter .15s;
-  }
-  .btn:hover{ filter:brightness(1.08); }
-  .btn:active{ transform:scale(0.98); }
-  .btn:disabled{ background:var(--line); color:var(--text-dim); cursor:not-allowed; }
-
-  .err-banner{
-    display:none; margin-top:14px; padding:10px 12px; border:1px solid var(--danger);
-    border-radius:var(--radius); background:rgba(228,88,88,0.08); color:var(--danger);
-    font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.5;
-  }
-  .err-banner.show{ display:block; }
-
-  .manifest{
-    background:
-      repeating-linear-gradient(to bottom, transparent, transparent 39px, var(--line) 40px);
-    min-height:120px;
-  }
-  .ticket-empty{ color:var(--text-dim); font-family:'IBM Plex Mono',monospace; font-size:13px; padding:30px 0; text-align:center; }
-
-  .step{
-    display:grid; grid-template-columns:26px 150px 1fr 90px; align-items:start; gap:14px;
-    padding:11px 0; opacity:0; transform:translateX(-6px);
-    animation:stepIn .35s forwards;
-  }
-  @keyframes stepIn{ to{opacity:1; transform:none;} }
-  .step-dot{
-    width:10px; height:10px; border-radius:50%; margin-top:4px;
-    background:var(--line); box-shadow:0 0 0 3px var(--surface);
-  }
-  .step.ok .step-dot{ background:var(--sage); }
-  .step.warn .step-dot{ background:var(--amber); }
-  .step.fail .step-dot{ background:var(--danger); }
-  .step-agent{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.05em; color:var(--amber); text-transform:uppercase; }
-  .step-detail{ font-size:13.5px; line-height:1.5; }
-  .step-detail b{ color:var(--paper); }
-  .step-stamp{
-    justify-self:end; font-family:'Oswald',sans-serif; font-size:10px; font-weight:600;
-    letter-spacing:0.08em; text-transform:uppercase; padding:3px 8px; border-radius:2px;
-    transform:rotate(-3deg); white-space:nowrap;
-  }
-  .stamp-ok{ color:var(--sage); border:1.5px solid var(--sage); }
-  .stamp-warn{ color:var(--amber); border:1.5px solid var(--amber); }
-  .stamp-fail{ color:var(--danger); border:1.5px solid var(--danger); }
-
-  .decision-box{ margin-top:18px; border-top:1px dashed var(--line); padding-top:16px; display:none; }
-  .decision-box.show{ display:block; }
-  .ngo-row{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:9px 12px; border:1px solid var(--line); border-radius:var(--radius); margin-bottom:6px;
-    font-family:'IBM Plex Mono',monospace; font-size:12px;
-  }
-  .ngo-row.winner{ border-color:var(--sage); background:rgba(127,176,105,0.08); }
-  .ngo-score{ color:var(--amber); font-weight:600; }
-  .ngo-detail{ font-size:10.5px; color:var(--text-dim); margin-top:2px; }
-
-  .impact-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
-  @media (max-width:700px){ .impact-grid{ grid-template-columns:1fr 1fr; } }
-  .impact-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; }
-  .impact-card .num{ font-family:'Oswald',sans-serif; font-size:32px; color:var(--amber); }
-  .impact-card .lbl{ font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-top:4px; }
-
-  .agent-lights{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:20px; }
-  .light{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px 10px; text-align:center; }
-  .light .dot{ width:8px; height:8px; border-radius:50%; background:var(--line); margin:0 auto 8px; }
-  .light.active .dot{ background:var(--amber); box-shadow:0 0 8px var(--amber); }
-  .light.done .dot{ background:var(--sage); }
-  .light.fail .dot{ background:var(--danger); }
-  .light .name{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); }
-
-  .map-wrap{ position:relative; height:280px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--surface-2); }
-  .pin{ position:absolute; transform:translate(-50%,-100%); text-align:center; }
-  .pin .dot{ width:12px; height:12px; border-radius:50%; margin:0 auto; border:2px solid var(--bg); }
-  .pin .tag{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--text-dim); margin-top:3px; white-space:nowrap; }
-  .route-line{ position:absolute; height:2px; background:repeating-linear-gradient(to right, var(--flare) 0 6px, transparent 6px 11px); transform-origin:left center; }
-
-  .log-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:12.5px; }
-  .log-row:last-child{ border-bottom:none; }
-  .log-time{ font-family:'IBM Plex Mono',monospace; color:var(--text-dim); font-size:11px; }
-
-  .portal-note{ font-size:13px; color:var(--text-dim); line-height:1.6; }
-  .badge{ display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; padding:3px 8px; border-radius:2px; border:1px solid var(--line); color:var(--text-dim); margin-right:6px;}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -218,14 +24,44 @@
       <button class="tab-btn active" data-view="restaurant">Restaurant</button>
       <button class="tab-btn" data-view="ngo">NGO</button>
       <button class="tab-btn" data-view="volunteer">Volunteer</button>
-      <button class="tab-btn" data-view="admin">Admin</button>
+      <button class="tab-btn" data-view="admin">Admin<span class="tab-hint">full view</span></button>
     </nav>
   </div>
 </header>
 
-<main>
+<section class="hero" id="pitchStrip">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="hero-eyebrow">AI Workforce · Food Rescue</div>
+      <h2 class="hero-title">Every meal<br>deserves a<br>second chance.</h2>
+      <p class="hero-sub">7 autonomous agents rescue surplus food from restaurants and route it to the right NGO in real time — every match explained, not a black box.</p>
+      <div class="hero-actions">
+        <button class="pitch-cta" id="pitchCta">Watch it work ↓</button>
+        <button class="pitch-dismiss" id="pitchDismiss">Hide this</button>
+      </div>
+    </div>
+    <div class="hero-ticket">
+      <div class="mini-ticket t1"><span>VEG THALI × 40</span><span class="mt-stamp">MATCHED</span></div>
+      <div class="mini-ticket t2"><span>BAKERY ITEMS × 18</span><span class="mt-stamp">EN ROUTE</span></div>
+      <div class="mini-ticket t3"><span>RICE BOWL × 25</span><span class="mt-stamp">DELIVERED</span></div>
+    </div>
+  </div>
+</section>
 
-  <!-- ===================== RESTAURANT VIEW ===================== -->
+
+<section class="how-section" style="max-width:1280px;margin:0 auto;padding:26px 28px 0;">
+  <div class="eyebrow">The Rescue Loop</div>
+  <h2 class="page-title" style="margin-bottom:0;">How SurplusAI works</h2>
+  <div class="how-grid">
+    <div class="how-step"><div class="how-num">01</div><h4>Donate</h4><p>Restaurants register surplus meals before they become waste.</p></div>
+    <div class="how-step"><div class="how-num">02</div><h4>Verify</h4><p>Quality and expiry agents assess freshness and safe consumption windows.</p></div>
+    <div class="how-step"><div class="how-num">03</div><h4>Match</h4><p>The matching agent ranks NGOs by need, proximity, capacity and urgency.</p></div>
+    <div class="how-step"><div class="how-num">04</div><h4>Route</h4><p>The route agent assigns a volunteer and calculates the delivery ETA.</p></div>
+    <div class="how-step"><div class="how-num">05</div><h4>Impact</h4><p>Every rescued meal is tracked as measurable social and environmental impact.</p></div>
+  </div>
+</section>
+
+<main>
   <section class="view active" id="view-restaurant">
     <div class="eyebrow">Restaurant Portal</div>
     <h2 class="page-title">Log a donation</h2>
@@ -258,10 +94,10 @@
 
         <div class="checkline">
           <input type="checkbox" id="forceReject">
-          <label style="margin:0" for="forceReject">Force quality rejection (demo branch)</label>
+          <label style="margin:0" for="forceReject">Simulate rejected donation (demo scenario)</label>
         </div>
 
-        <button class="btn" id="donateBtn">Donate</button>
+        <button class="btn nudge" id="donateBtn">Donate</button>
         <div class="err-banner" id="errBanner"></div>
       </div>
 
@@ -279,7 +115,6 @@
     </div>
   </section>
 
-  <!-- ===================== NGO VIEW ===================== -->
   <section class="view" id="view-ngo">
     <div class="eyebrow">NGO Portal</div>
     <h2 class="page-title">Incoming donations</h2>
@@ -290,7 +125,6 @@
     </div>
   </section>
 
-  <!-- ===================== VOLUNTEER VIEW ===================== -->
   <section class="view" id="view-volunteer">
     <div class="eyebrow">Volunteer Portal</div>
     <h2 class="page-title">Delivery tasks</h2>
@@ -301,27 +135,91 @@
     </div>
   </section>
 
-  <!-- ===================== ADMIN VIEW ===================== -->
   <section class="view" id="view-admin">
-    <div class="eyebrow">Admin Command Center</div>
-    <h2 class="page-title">Live operations</h2>
-
-    <div class="impact-grid">
-      <div class="impact-card"><div class="num" id="statMeals">0</div><div class="lbl">Meals rescued</div></div>
-      <div class="impact-card"><div class="num" id="statPeople">0</div><div class="lbl">People fed</div></div>
-      <div class="impact-card"><div class="num" id="statWaste">0<span style="font-size:16px">kg</span></div><div class="lbl">Food waste prevented</div></div>
-      <div class="impact-card"><div class="num" id="statCO2">0<span style="font-size:16px">kg</span></div><div class="lbl">CO₂ avoided</div></div>
+    <div class="admin-toolbar">
+      <div>
+        <div class="eyebrow">Admin Command Center</div>
+        <h2 class="page-title" style="margin-bottom:0;">Live operations</h2>
+      </div>
+      <div class="system-meta">
+        <span class="live-pill"><i class="pulse"></i><span id="adminLiveLabel">SYSTEM ONLINE</span></span>
+        <span id="lastUpdated">Updated just now</span>
+      </div>
     </div>
 
-    <div class="card" style="margin-bottom:18px;">
-      <h3>Agent Status</h3>
+    <div class="impact-grid">
+      <div class="impact-card c-meals"><div class="impact-icon i-meals">🍽</div><div class="impact-body"><div class="num" id="statMeals">0</div><div class="lbl">Meals rescued</div></div></div>
+      <div class="impact-card c-people"><div class="impact-icon i-people">🤝</div><div class="impact-body"><div class="num" id="statPeople">0</div><div class="lbl">People fed</div></div></div>
+      <div class="impact-card c-waste"><div class="impact-icon i-waste">♻</div><div class="impact-body"><div class="num" id="statWaste">0<span style="font-size:15px">kg</span></div><div class="lbl">Food waste prevented</div></div></div>
+      <div class="impact-card c-co2"><div class="impact-icon i-co2">🌍</div><div class="impact-body"><div class="num" id="statCO2">0<span style="font-size:15px">kg</span></div><div class="lbl">CO₂ avoided</div></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3>AI Workforce Pipeline</h3>
       <div class="agent-lights" id="agentLights"></div>
     </div>
 
-    <div class="grid grid-2">
+    <div class="grid admin-grid-main">
       <div class="card">
-        <h3>Live Map</h3>
-        <div class="map-wrap" id="mapWrap"></div>
+        <div class="map-head">
+          <h3 style="margin-bottom:0;">Live Operations Map</h3>
+          <div class="map-controls">
+            <button type="button" class="map-control-btn" id="mapZoomOut">−</button>
+            <button type="button" class="map-control-btn" id="mapZoomReset">1×</button>
+            <button type="button" class="map-control-btn" id="mapZoomIn">+</button>
+          </div>
+        </div>
+        <div class="map-filterbar">
+          <button class="map-filter active" data-map-filter="restaurants">Restaurants</button>
+          <button class="map-filter active" data-map-filter="ngos">NGOs</button>
+          <button class="map-filter active" data-map-filter="volunteers">Volunteers</button>
+          <button class="map-filter active" data-map-filter="routes">Routes</button>
+        </div>
+        <div class="map-wrap interactive" id="mapWrap">
+          <div class="map-canvas" id="mapCanvas">
+            <div class="map-gridline"></div>
+            <div class="map-zone" style="left:8%;top:10%;">NORTH ZONE</div>
+            <div class="map-zone" style="right:8%;top:10%;">EAST ZONE</div>
+            <div class="map-zone" style="left:8%;bottom:10%;">WEST ZONE</div>
+            <div class="map-zone" style="right:8%;bottom:10%;">SOUTH ZONE</div>
+          </div>
+          <div class="map-popup" id="mapPopup"></div>
+        </div>
+        <div class="map-legend">
+          <span><i class="dot-legend" style="background:var(--flare)"></i>Restaurant</span>
+          <span><i class="dot-legend" style="background:var(--sage)"></i>Selected NGO</span>
+          <span><i class="dot-legend" style="background:var(--line)"></i>Other NGOs</span>
+          <span><i class="dot-legend" style="background:var(--amber)"></i>Volunteer</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Active Deliveries</h3>
+        <div class="delivery-list" id="deliveryList">
+          <div class="portal-note">No active deliveries yet. Submit a donation to create a live delivery simulation.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card match-panel" id="matchPanel">
+      <h3>AI Match Explanation</h3>
+      <div class="match-grid">
+        <div class="match-winner" id="matchWinner">
+          <p class="portal-note">The Matching Agent's reasoning will appear here after a donation is processed.</p>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px;">Alternative NGO Rankings</h3>
+          <div class="rank-list" id="rankList"><div class="portal-note">Waiting for matching data.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:20px;">
+      <div class="card">
+        <h3>Live Activity</h3>
+        <div class="activity-feed" id="activityFeed">
+          <div class="portal-note">Agent events will appear here in real time.</div>
+        </div>
       </div>
       <div class="card">
         <h3>Donation Log</h3>
@@ -332,262 +230,70 @@
 
 </main>
 
-<script>
-/* ============================================================
-   API CONFIG — points at the FastAPI backend (backend/main.py).
-   Run it locally with:  uvicorn main:app --reload --port 8000
-   ============================================================ */
-const API_BASE = "https://surplusai-backend.vercel.app";
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>SurplusAI — built for <strong style="color:var(--text)">HackAgentAIx</strong></span>
+    <a href="https://github.com/utkarsh4964-stack/surplusai" target="_blank" rel="noopener">View source on GitHub →</a>
+  </div>
+</footer>
 
-/* map layout is a client-side visual convenience only — real
-   lat/lng comes from the backend /ngos response */
-const MAP_LAYOUT = {
-  "ngo_hope": { x:62, y:38 },
-  "ngo_asha": { x:78, y:60 },
-  "ngo_seva": { x:20, y:70 },
-  "ngo_annadaan": { x:40, y:22 },
-};
-const RESTAURANT_POS = { x:50, y:88 };
+<div class="toast" id="toast">
+  <div class="t-title" id="toastTitle">Rescued</div>
+  <div id="toastBody"></div>
+</div>
 
-let NGOS_CACHE = [];
+<div class="demo-modal" id="demoModal" aria-hidden="true">
+  <div class="demo-panel" role="dialog" aria-modal="true" aria-labelledby="demoTitle">
+    <button type="button" class="demo-close" id="demoClose" aria-label="Close demo">×</button>
 
-/* ============ CONNECTION CHECK ============ */
-async function checkConnection(){
-  const el = document.getElementById('connStatus');
-  const label = document.getElementById('connLabel');
-  try{
-    const res = await fetch(API_BASE + '/health');
-    if(!res.ok) throw new Error('bad status');
-    el.classList.add('live');
-    label.textContent = 'Backend connected';
-    NGOS_CACHE = await (await fetch(API_BASE + '/ngos')).json();
-    renderMap();
-    const impact = await (await fetch(API_BASE + '/impact')).json();
-    applyImpactTotals(impact);
-  }catch(e){
-    el.classList.remove('live');
-    label.textContent = 'Backend offline — run uvicorn main:app --port 8000';
-  }
-}
-checkConnection();
-setInterval(checkConnection, 8000);
+    <div class="demo-header">
+      <div class="eyebrow">Interactive Product Demo</div>
+      <div class="demo-title" id="demoTitle">Watch SurplusAI work</div>
+      <div class="demo-subtitle">See how one surplus-food donation moves through the AI rescue network.</div>
+    </div>
 
-/* ============ NAV ============ */
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('view-'+btn.dataset.view).classList.add('active');
-  });
-});
+    <div class="demo-progress"><span id="demoProgress"></span></div>
 
-/* ============ IMAGE UPLOAD ============ */
-const uploadBox = document.getElementById('uploadBox');
-const fileInput = document.getElementById('fileInput');
-let uploadedImageBase64 = null;
-uploadBox.addEventListener('click', ()=>fileInput.click());
-fileInput.addEventListener('change', e=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = ev=>{
-    uploadedImageBase64 = ev.target.result;
-    uploadBox.innerHTML = `<img src="${ev.target.result}" alt="food photo">`;
-  };
-  reader.readAsDataURL(f);
-});
-
-/* ============ AGENT LIGHTS ============ */
-const AGENT_NAMES = ["Donation","Quality","Expiry","Matching","Routing","Notify","Impact"];
-function buildLights(){
-  document.getElementById('agentLights').innerHTML =
-    AGENT_NAMES.map(n=>`<div class="light" data-agent="${n}"><div class="dot"></div><div class="name">${n}</div></div>`).join('');
-}
-buildLights();
-function resetLights(){ document.querySelectorAll('.light').forEach(l=>l.classList.remove('active','done','fail')); }
-function setLight(name, state){
-  const el = document.querySelector(`.light[data-agent="${name}"]`);
-  if(el){ el.classList.remove('active','done','fail'); el.classList.add(state); }
-}
-
-/* ============ MAP ============ */
-function renderMap(winnerId){
-  const wrap = document.getElementById('mapWrap');
-  wrap.innerHTML = '';
-  const addPin = (x,y,color,label)=>{
-    const p = document.createElement('div');
-    p.className='pin'; p.style.left=x+'%'; p.style.top=y+'%';
-    p.innerHTML = `<div class="dot" style="background:${color}"></div><div class="tag">${label}</div>`;
-    wrap.appendChild(p);
-  };
-  addPin(RESTAURANT_POS.x, RESTAURANT_POS.y, 'var(--flare)', 'Restaurant');
-  NGOS_CACHE.forEach(n=>{
-    const pos = MAP_LAYOUT[n.id] || {x:50,y:50};
-    addPin(pos.x, pos.y, (winnerId && n.id===winnerId) ? 'var(--sage)' : 'var(--line)', n.name);
-  });
-  if(winnerId){
-    const pos = MAP_LAYOUT[winnerId];
-    if(pos){
-      const dx = pos.x - RESTAURANT_POS.x, dy = pos.y - RESTAURANT_POS.y;
-      const len = Math.sqrt(dx*dx+dy*dy);
-      const angle = Math.atan2(dy,dx)*180/Math.PI;
-      const line = document.createElement('div');
-      line.className='route-line';
-      line.style.left = RESTAURANT_POS.x+'%';
-      line.style.top = RESTAURANT_POS.y+'%';
-      line.style.width = len+'%';
-      line.style.transform = `rotate(${angle}deg)`;
-      wrap.appendChild(line);
-    }
-  }
-}
-
-/* ============ HELPERS ============ */
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function addStep(container, {agent, cls, detail, stamp, stampCls}){
-  const div = document.createElement('div');
-  div.className = `step ${cls}`;
-  div.innerHTML = `
-    <div class="step-dot"></div>
-    <div class="step-agent">${agent}</div>
-    <div class="step-detail">${detail}</div>
-    <div class="step-stamp ${stampCls}">${stamp}</div>
-  `;
-  container.appendChild(div);
-}
-const CLS_MAP = { ok:['ok','stamp-ok'], warn:['warn','stamp-warn'], fail:['fail','stamp-fail'] };
-const LIGHT_MAP = { ok:'done', warn:'done', fail:'fail' };
-
-/* ============ MAIN DONATE FLOW — calls the real backend ============ */
-document.getElementById('donateBtn').addEventListener('click', runDonation);
-
-async function runDonation(){
-  const btn = document.getElementById('donateBtn');
-  const errBanner = document.getElementById('errBanner');
-  errBanner.classList.remove('show');
-  btn.disabled = true;
-  resetLights();
-
-  const pipeline = document.getElementById('pipeline');
-  pipeline.innerHTML = '';
-  document.getElementById('decisionBox').classList.remove('show');
-
-  const body = {
-    food_type: document.getElementById('foodType').value,
-    quantity: parseInt(document.getElementById('quantity').value) || 1,
-    pickup_time: document.getElementById('pickupTime').value,
-    force_reject: document.getElementById('forceReject').checked,
-    image_base64: uploadedImageBase64,
-  };
-
-  let result;
-  try{
-    const res = await fetch(API_BASE + '/donate', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(body),
-    });
-    if(!res.ok) throw new Error('Backend returned ' + res.status);
-    result = await res.json();
-  }catch(e){
-    errBanner.textContent = 'Could not reach backend at ' + API_BASE + '. Start it with: uvicorn main:app --port 8000 (from /backend).';
-    errBanner.classList.add('show');
-    btn.disabled = false;
-    return;
-  }
-
-  document.getElementById('ticketBadge').textContent = result.ticket_id || '';
-
-  // replay the trace with staggered animation so it reads as "live"
-  const agentToLight = { "Donation Agent":"Donation", "Quality Agent":"Quality", "Expiry Agent":"Expiry",
-                          "Matching Agent":"Matching", "Route Agent":"Routing", "Notification Agent":"Notify",
-                          "Impact Agent":"Impact" };
-
-  for(const step of result.steps){
-    const [stepCls, stampCls] = CLS_MAP[step.status] || CLS_MAP.ok;
-    const lightName = agentToLight[step.agent];
-    if(lightName) setLight(lightName, 'active');
-    await sleep(550);
-    addStep(pipeline, { agent: step.agent, cls: stepCls, detail: step.detail, stamp: step.stamp, stampCls });
-    if(lightName) setLight(lightName, LIGHT_MAP[step.status] || 'done');
-
-    // reveal decision timeline right after Matching Agent step
-    if(step.agent === 'Matching Agent' && result.matching && result.matching.ranked){
-      showDecisionTimeline(result.matching.ranked);
-      renderMap(result.matching.winner.id);
-    }
-    await sleep(250);
-  }
-
-  if(result.status === 'completed'){
-    applyImpactTotals(result.impact.session_totals);
-    logDonation(result);
-    addFeed(result);
-  }
-
-  btn.disabled = false;
-}
-
-function showDecisionTimeline(ranked){
-  const dbox = document.getElementById('decisionBox');
-  const bd = document.getElementById('ngoBreakdown');
-  bd.innerHTML = ranked.map((n,i)=>`
-    <div class="ngo-row ${i===0?'winner':''}">
-      <div>
-        <div>${i===0?'🏆 ':''}${n.name} — ${n.distance_km} km</div>
-        <div class="ngo-detail">need ${n.need_match} · proximity ${n.proximity} · capacity ${n.capacity_fit} · urgency ${n.urgency_bonus}</div>
+    <div class="demo-stage">
+      <div class="demo-step-number" id="demoStepNumber">Step 1 of 7</div>
+      <div class="demo-step-icon" id="demoStepIcon">🍱</div>
+      <div class="demo-step-title" id="demoStepTitle">Donation received</div>
+      <div class="demo-step-detail" id="demoStepDetail">
+        A restaurant has registered 40 fresh vegetarian meals that would otherwise become food waste.
       </div>
-      <span class="ngo-score">score ${n.score}</span>
-    </div>`).join('');
-  dbox.classList.add('show');
-}
+      <div class="demo-status"><i class="status-dot"></i><span id="demoStatus">Processing live workflow</span></div>
 
-/* ============ IMPACT COUNTERS ============ */
-function animateNum(el, from, to, suffix=''){
-  const dur = 600, start = performance.now();
-  function step(t){
-    const p = Math.min(1, (t-start)/dur);
-    const val = Math.round(from + (to-from)*p);
-    el.textContent = val + suffix;
-    if(p<1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-let lastTotals = {meals:0, people:0, waste_kg:0, co2_kg:0};
-function applyImpactTotals(totals){
-  animateNum(document.getElementById('statMeals'), lastTotals.meals, totals.meals);
-  animateNum(document.getElementById('statPeople'), lastTotals.people, totals.people);
-  animateNum(document.getElementById('statWaste'), lastTotals.waste_kg, totals.waste_kg, 'kg');
-  animateNum(document.getElementById('statCO2'), lastTotals.co2_kg, totals.co2_kg, 'kg');
-  lastTotals = totals;
-}
+      <div class="demo-route" id="demoRoute" style="display:none;">
+        <div class="demo-route-line"></div>
+        <div class="demo-route-point start"><div class="point-icon">🔴</div><span>Restaurant</span></div>
+        <div class="demo-route-point mid"><div class="point-icon">🚚</div><span>Volunteer</span></div>
+        <div class="demo-route-point end"><div class="point-icon">🟢</div><span>NGO</span></div>
+        <div class="demo-truck" id="demoTruck">🚚</div>
+      </div>
 
-/* ============ LOG / FEEDS ============ */
-function logDonation(result){
-  const log = document.getElementById('donationLog');
-  if(log.querySelector('.portal-note')) log.innerHTML = '';
-  const row = document.createElement('div');
-  row.className = 'log-row';
-  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  row.innerHTML = `<span>${result.ticket_id} · ${result.donation.quantity} × ${result.donation.food_type} → ${result.matching.winner.name}</span><span class="log-time">${now}</span>`;
-  log.prepend(row);
-}
-function addFeed(result){
-  const ngoFeed = document.getElementById('ngoFeed');
-  if(ngoFeed.querySelector('.portal-note')) ngoFeed.innerHTML='';
-  const row = document.createElement('div');
-  row.className='log-row';
-  row.innerHTML = `<span><span class="badge">${result.ticket_id}</span>${result.donation.quantity} × ${result.donation.food_type} arriving from Restaurant</span><span class="log-time">via ${result.routing.volunteer.name}</span>`;
-  ngoFeed.prepend(row);
+      <div class="demo-stats" id="demoStats" style="display:none;">
+        <div class="demo-stat"><div class="value">+40</div><div class="label">Meals Rescued</div></div>
+        <div class="demo-stat"><div class="value">+40</div><div class="label">People Fed</div></div>
+        <div class="demo-stat"><div class="value">+8kg</div><div class="label">Waste Prevented</div></div>
+      </div>
 
-  const volFeed = document.getElementById('volFeed');
-  if(volFeed.querySelector('.portal-note')) volFeed.innerHTML='';
-  const vrow = document.createElement('div');
-  vrow.className='log-row';
-  vrow.innerHTML = `<span><span class="badge">${result.ticket_id}</span>Deliver ${result.donation.quantity} × ${result.donation.food_type} to ${result.matching.winner.name}</span><span class="log-time">ETA ${result.routing.eta_minutes} min</span>`;
-  volFeed.prepend(vrow);
-}
-</script>
+      <div class="demo-complete" id="demoComplete">
+        <div class="demo-complete-icon">🌍</div>
+        <h3>Rescue mission complete</h3>
+        <p class="demo-step-detail" style="margin:8px auto 0;">
+          The surplus meal has been successfully rescued, matched and delivered.
+        </p>
+      </div>
+    </div>
+
+    <div class="demo-actions">
+      <button type="button" class="btn btn-primary" id="demoNext">Start Demo</button>
+      <button type="button" class="btn btn-outline" id="demoRestart" style="display:none;">↻ Run Again</button>
+      <button type="button" class="btn btn-outline" id="demoExplore">Explore Admin Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
