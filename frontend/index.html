@@ -3,28 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SurplusAI — Dispatch Console</title>
+<title>SurplusAI — Food Rescue Network</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
   <div class="brand">
-    <div class="brand-mark">S</div>
+    <div class="brand-mark">🍲</div>
     <div>
       <h1>SurplusAI</h1>
-      <span>Dispatch Console · Live Backend</span>
+      <span>A Food Rescue Network, powered by AI</span>
     </div>
   </div>
   <div class="topbar-right">
     <div class="conn" id="connStatus"><div class="dot"></div><span id="connLabel">Checking API…</span></div>
     <nav>
-      <button class="tab-btn active" data-view="restaurant">Restaurant</button>
-      <button class="tab-btn" data-view="ngo">NGO</button>
-      <button class="tab-btn" data-view="volunteer">Volunteer</button>
-      <button class="tab-btn" data-view="admin">Admin<span class="tab-hint">full view</span></button>
+      <button class="tab-btn active" data-view="restaurant">🍽 Donor</button>
+      <button class="tab-btn" data-view="ngo">🏠 NGO Partner</button>
+      <button class="tab-btn" data-view="volunteer">🚲 Volunteer</button>
+      <button class="tab-btn" data-view="admin">📊 Impact Hub<span class="tab-hint">full view</span></button>
     </nav>
   </div>
 </header>
@@ -32,11 +32,11 @@
 <section class="hero" id="pitchStrip">
   <div class="hero-inner">
     <div class="hero-copy">
-      <div class="hero-eyebrow">AI Workforce · Food Rescue</div>
+      <div class="hero-eyebrow">🤝 A Community Food Rescue Initiative</div>
       <h2 class="hero-title">Every meal<br>deserves a<br>second chance.</h2>
-      <p class="hero-sub">7 autonomous agents rescue surplus food from restaurants and route it to the right NGO in real time — every match explained, not a black box.</p>
+      <p class="hero-sub">No child should go hungry while good food goes to waste. SurplusAI connects restaurants, NGOs and volunteers through a team of 7 caring AI agents — matching surplus meals to the families who need them most, in real time, with every decision explained openly.</p>
       <div class="hero-actions">
-        <button class="pitch-cta" id="pitchCta">Watch it work ↓</button>
+        <button class="pitch-cta" id="pitchCta">See a rescue happen ↓</button>
         <button class="pitch-dismiss" id="pitchDismiss">Hide this</button>
       </div>
     </div>
@@ -50,21 +50,21 @@
 
 
 <section class="how-section" style="max-width:1280px;margin:0 auto;padding:26px 28px 0;">
-  <div class="eyebrow">The Rescue Loop</div>
-  <h2 class="page-title" style="margin-bottom:0;">How SurplusAI works</h2>
+  <div class="eyebrow">🌱 The Rescue Journey</div>
+  <h2 class="page-title" style="margin-bottom:0;">From surplus plate to a full stomach</h2>
   <div class="how-grid">
-    <div class="how-step"><div class="how-num">01</div><h4>Donate</h4><p>Restaurants register surplus meals before they become waste.</p></div>
-    <div class="how-step"><div class="how-num">02</div><h4>Verify</h4><p>Quality and expiry agents assess freshness and safe consumption windows.</p></div>
-    <div class="how-step"><div class="how-num">03</div><h4>Match</h4><p>The matching agent ranks NGOs by need, proximity, capacity and urgency.</p></div>
-    <div class="how-step"><div class="how-num">04</div><h4>Route</h4><p>The route agent assigns a volunteer and calculates the delivery ETA.</p></div>
-    <div class="how-step"><div class="how-num">05</div><h4>Impact</h4><p>Every rescued meal is tracked as measurable social and environmental impact.</p></div>
+    <div class="how-step"><div class="how-num">01</div><h4>🍱 Donate</h4><p>A restaurant, hotel or kitchen shares its surplus meals before they ever become waste.</p></div>
+    <div class="how-step"><div class="how-num">02</div><h4>👁 Care Check</h4><p>Our Quality & Expiry agents gently verify freshness and the safe window for consumption.</p></div>
+    <div class="how-step"><div class="how-num">03</div><h4>🎯 Match</h4><p>The Matching agent finds the NGO with the greatest need, closest by, ready to receive.</p></div>
+    <div class="how-step"><div class="how-num">04</div><h4>🚲 Deliver</h4><p>A nearby volunteer is assigned instantly, with a clear route and honest ETA.</p></div>
+    <div class="how-step"><div class="how-num">05</div><h4>🌍 Impact</h4><p>Every rescued meal becomes a real, countable act — people fed, waste and emissions avoided.</p></div>
   </div>
 </section>
 
 <main>
   <section class="view active" id="view-restaurant">
-    <div class="eyebrow">Restaurant Portal</div>
-    <h2 class="page-title">Log a donation</h2>
+    <div class="eyebrow">🍽 Donor Portal</div>
+    <h2 class="page-title">Give a meal a second chance</h2>
 
     <div class="grid grid-restaurant">
       <div class="card">
@@ -116,33 +116,33 @@
   </section>
 
   <section class="view" id="view-ngo">
-    <div class="eyebrow">NGO Portal</div>
-    <h2 class="page-title">Incoming donations</h2>
+    <div class="eyebrow">🏠 NGO Partner Portal</div>
+    <h2 class="page-title">Meals headed your way</h2>
     <div class="card">
-      <h3>Session Feed</h3>
-      <p class="portal-note">Read-only demo view. Every donation the Matching Agent routes appears here, sourced from the same backend response as the Restaurant pipeline.</p>
-      <div id="ngoFeed" style="margin-top:16px;"><div class="portal-note">No donations yet this session.</div></div>
+      <h3>🔔 Incoming Donations</h3>
+      <p class="portal-note">Read-only view for our NGO partners. Every donation the Matching Agent routes to you appears here the moment it's confirmed, sourced from the same live pipeline as the Donor Portal.</p>
+      <div id="ngoFeed" style="margin-top:16px;"><div class="portal-note">No donations yet this session — they'll appear here the moment a match is made.</div></div>
     </div>
   </section>
 
   <section class="view" id="view-volunteer">
-    <div class="eyebrow">Volunteer Portal</div>
-    <h2 class="page-title">Delivery tasks</h2>
+    <div class="eyebrow">🚲 Volunteer Portal</div>
+    <h2 class="page-title">Your next delivery run</h2>
     <div class="card">
-      <h3>Assigned Runs — Session Feed</h3>
-      <p class="portal-note">Mirrors what the Route Agent assigns on the backend.</p>
-      <div id="volFeed" style="margin-top:16px;"><div class="portal-note">No tasks yet this session.</div></div>
+      <h3>📋 Assigned Runs</h3>
+      <p class="portal-note">Thank you for showing up for your community. This mirrors every run the Route Agent assigns you, live.</p>
+      <div id="volFeed" style="margin-top:16px;"><div class="portal-note">No tasks yet this session — your next rescue run will show up here.</div></div>
     </div>
   </section>
 
   <section class="view" id="view-admin">
     <div class="admin-toolbar">
       <div>
-        <div class="eyebrow">Admin Command Center</div>
-        <h2 class="page-title" style="margin-bottom:0;">Live operations</h2>
+        <div class="eyebrow">📊 Impact Hub</div>
+        <h2 class="page-title" style="margin-bottom:0;">Our rescue network, live</h2>
       </div>
       <div class="system-meta">
-        <span class="live-pill"><i class="pulse"></i><span id="adminLiveLabel">SYSTEM ONLINE</span></span>
+        <span class="live-pill"><i class="pulse"></i><span id="adminLiveLabel">NETWORK ONLINE</span></span>
         <span id="lastUpdated">Updated just now</span>
       </div>
     </div>
@@ -232,7 +232,7 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <span>SurplusAI — built for <strong style="color:var(--text)">HackAgentAIx</strong></span>
+    <span>🍲 SurplusAI — every meal deserves a second chance. Built for <strong style="color:var(--text)">HackAgentAIx</strong></span>
     <a href="https://github.com/utkarsh4964-stack/surplusai" target="_blank" rel="noopener">View source on GitHub →</a>
   </div>
 </footer>
