@@ -4,11 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SurplusAI — Food Rescue Network</title>
-<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/logo-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/logo-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/logo-180.png">
-<meta name="theme-color" content="#E15A2A">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -17,7 +14,7 @@
 
 <header>
   <div class="brand">
-    <img class="brand-mark" src="assets/logo-192.png" alt="SurplusAI logo">
+    <div class="brand-mark"><img src="assets/logo.png" alt="SurplusAI logo"></div>
     <div>
       <h1>SurplusAI</h1>
       <span>A Food Rescue Network, powered by AI</span>
@@ -106,7 +103,6 @@
     <h2 class="page-title">Give a meal a second chance</h2>
     <div class="portal-banner">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Young%20man%20prepares%20food%20donation%20bags.jpg" alt="Volunteer preparing food donation bags" loading="lazy">
-      <div class="portal-banner-cap">Every donation, packed with care</div>
     </div>
 
     <div class="grid grid-restaurant">
@@ -161,124 +157,78 @@
   <section class="view" id="view-ngo">
     <div class="eyebrow">🏠 NGO Partner Portal</div>
     <h2 class="page-title">Meals headed your way</h2>
-
-    <div class="portal-intro">
-      <div class="portal-intro-copy">
-        <p>This is your organisation's window into the rescue network. SurplusAI plugs you directly into a live feed of surplus meals from nearby restaurants, hotels and bakeries — no phone calls, no chasing drivers, no guessing what's coming. The Matching Agent only sends donations that fit your need, your capacity and your location, and every one arrives pre-screened for freshness before a volunteer is even assigned.</p>
-        <div class="trust-row">
-          <span class="trust-chip">✅ Verified by Quality Agent</span>
-          <span class="trust-chip">📍 Matched by proximity & capacity</span>
-          <span class="trust-chip">🔔 Confirmed in real time</span>
-        </div>
-      </div>
-      <div class="portal-banner-side">
-        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Children%20at%20a%20rural%20school%20provided%20with%20lunch%20Uttar%20Pradesh%20India.jpg" alt="Children receiving a meal, Uttar Pradesh, India" loading="lazy">
-        <div class="portal-banner-cap">Reaching the families who need it most</div>
-      </div>
+    <div class="portal-banner">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Children%20at%20a%20rural%20school%20provided%20with%20lunch%20Uttar%20Pradesh%20India.jpg" alt="Children receiving a meal, Uttar Pradesh, India" loading="lazy">
     </div>
 
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🎯</div>
-        <h4>Matched to your need</h4>
-        <p>The Matching Agent scores every partner NGO on need, proximity, capacity and urgency — you only see donations sized right for your kitchen.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🧾</div>
-        <h4>Know before it arrives</h4>
-        <p>Food type, quantity and the volunteer assigned to your delivery are visible the instant a match is made, so your team can prep space and staff.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🤝</div>
-        <h4>One trusted chain</h4>
-        <p>Every donation comes from a screened restaurant partner and is carried by a verified volunteer — the same accountable chain, every single time.</p>
-      </div>
+    <p class="portal-intro">SurplusAI partners with verified NGOs, shelters, orphanages and community kitchens across the city. Once you're onboarded, our Matching Agent treats your organisation as a live node in the rescue network — weighing your stated need, capacity and proximity every time a new donation comes in, so meals land where they'll do the most good, not just wherever's closest.</p>
+
+    <div class="how-grid">
+      <div class="how-step"><div class="how-num">🎯</div><h4>How you get matched</h4><p>Your profile's need level, remaining capacity and distance from the donor are scored together — you're never just "next in line."</p></div>
+      <div class="how-step"><div class="how-num">🔔</div><h4>What you'll receive</h4><p>A confirmed donation with food type, quantity, pickup window and an assigned volunteer's ETA — no back-and-forth calls needed.</p></div>
+      <div class="how-step"><div class="how-num">✅</div><h4>Freshness, guaranteed</h4><p>Every donation already passed our Quality & Expiry agents before it's routed to you, so you always know it's safe to serve.</p></div>
+      <div class="how-step"><div class="how-num">📈</div><h4>Your impact, tracked</h4><p>Meals received, people fed and waste diverted through your organisation all roll up into the network-wide Impact Hub.</p></div>
     </div>
 
-    <div class="grid grid-2" style="align-items:start;">
+    <div class="grid grid-2" style="margin-top:20px;">
+      <div class="card">
+        <h3>📋 Partner Responsibilities</h3>
+        <ul class="checklist">
+          <li>Confirm pickup within the window shared in your notification.</li>
+          <li>Have someone available to receive the volunteer at the door.</li>
+          <li>Report any quality concerns immediately so the Quality Agent can learn from it.</li>
+          <li>Keep your capacity and need level updated so future matches stay accurate.</li>
+        </ul>
+      </div>
       <div class="card">
         <h3>🔔 Incoming Donations</h3>
         <p class="portal-note">Read-only view for our NGO partners. Every donation the Matching Agent routes to you appears here the moment it's confirmed, sourced from the same live pipeline as the Donor Portal.</p>
         <div id="ngoFeed" style="margin-top:16px;"><div class="portal-note">No donations yet this session — they'll appear here the moment a match is made.</div></div>
       </div>
+    </div>
 
-      <div>
-        <div class="testimonial-card">
-          <p>"Knowing exactly what's arriving and when means nothing goes to waste twice — we can plan the next meal service around it."</p>
-          <span>— Community kitchen coordinator</span>
-        </div>
-        <div class="tip-card">
-          <h4>Before the volunteer arrives</h4>
-          <ul>
-            <li>Keep a staff member near the gate around the pickup window</li>
-            <li>Have a cooler or steel container ready for hot food</li>
-            <li>Confirm today's headcount so nothing is over- or under-served</li>
-            <li>Flag any issue on arrival — it feeds straight back to the Quality Agent</li>
-          </ul>
-        </div>
-      </div>
+    <div class="card" style="margin-top:20px;">
+      <h3>🤝 Not yet a partner NGO?</h3>
+      <p class="portal-note">We onboard shelters, orphanages, old-age homes and community kitchens on a rolling basis — verification usually takes under 48 hours. Reach out through the GitHub repo linked in the footer to get started.</p>
     </div>
   </section>
 
   <section class="view" id="view-volunteer">
     <div class="eyebrow">🚲 Volunteer Portal</div>
     <h2 class="page-title">Your next delivery run</h2>
-
-    <div class="portal-intro">
-      <div class="portal-intro-copy">
-        <p>Thank you for showing up for your community. The moment a donation is matched, the Route Agent works out the fastest path from kitchen to doorstep and hands it straight to you here — no phone tag with dispatch, no second-guessing the address. Just a clear pickup, a mapped route and an honest ETA, every run.</p>
-        <div class="trust-row">
-          <span class="trust-chip">🗺 Route pre-calculated</span>
-          <span class="trust-chip">⏱ Live, honest ETA</span>
-          <span class="trust-chip">🤝 One-tap confirmation</span>
-        </div>
-      </div>
-      <div class="portal-banner-side">
-        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Meals%20on%20Wheels%20delivery.jpg" alt="Volunteer delivering a meal to a family" loading="lazy">
-        <div class="portal-banner-cap">Delivered with a smile</div>
-      </div>
+    <div class="portal-banner">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Meals%20on%20Wheels%20delivery.jpg" alt="Volunteer delivering a meal to a family" loading="lazy">
     </div>
 
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🗺</div>
-        <h4>Route, done for you</h4>
-        <p>The Route Agent calculates distance, traffic and the fastest path the moment you're assigned — you just follow it.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">⏱</div>
-        <h4>An ETA you can trust</h4>
-        <p>Pickup and drop-off times are estimated from real conditions, so both the restaurant and the NGO know when to expect you.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🌍</div>
-        <h4>Impact you can see</h4>
-        <p>Every completed run is logged instantly by the Impact Agent — meals rescued, people fed, CO₂ avoided, all counted.</p>
-      </div>
+    <p class="portal-intro">Thank you for showing up for your community. Every run you take on closes the loop between a restaurant's surplus and a family's next meal — the Route Agent assigns you the nearest active donation, calculates a realistic ETA from live traffic conditions, and hands you a clear pickup-to-drop-off path, so you're never guessing.</p>
+
+    <div class="how-grid">
+      <div class="how-step"><div class="how-num">📍</div><h4>How you're assigned</h4><p>The Route Agent picks the closest available volunteer to both the donor and the matched NGO, to keep total transit time as short as possible.</p></div>
+      <div class="how-step"><div class="how-num">🗺️</div><h4>Your route, mapped</h4><p>Pickup point, drop-off point and a live ETA are calculated the moment a match is made — visible to you and to the receiving NGO.</p></div>
+      <div class="how-step"><div class="how-num">🛡️</div><h4>Safety & support</h4><p>Every donation has already cleared a freshness check, and dispatch support is one tap away if a pickup or drop-off doesn't go to plan.</p></div>
+      <div class="how-step"><div class="how-num">🌍</div><h4>Your impact</h4><p>Every completed run adds directly to meals rescued, people fed and CO₂ avoided on the Impact Hub — your effort is always counted.</p></div>
     </div>
 
-    <div class="grid grid-2" style="align-items:start;">
+    <div class="grid grid-2" style="margin-top:20px;">
+      <div class="card">
+        <h3>📋 Before Every Run</h3>
+        <ul class="checklist">
+          <li>Confirm the pickup window with the donor before heading out.</li>
+          <li>Handle food containers gently to keep the Quality Agent's freshness check valid.</li>
+          <li>Mark the run complete as soon as it's handed off, so the NGO and Impact Hub update instantly.</li>
+          <li>Flag any delay early — the receiving NGO can see your live ETA either way.</li>
+        </ul>
+      </div>
       <div class="card">
         <h3>📋 Assigned Runs</h3>
-        <p class="portal-note">This mirrors every run the Route Agent assigns you, live — sourced from the same pipeline as the Donor and NGO Partner portals.</p>
+        <p class="portal-note">This mirrors every run the Route Agent assigns you, live.</p>
         <div id="volFeed" style="margin-top:16px;"><div class="portal-note">No tasks yet this session — your next rescue run will show up here.</div></div>
       </div>
+    </div>
 
-      <div>
-        <div class="testimonial-card">
-          <p>"Every plate I deliver is someone's dinner sorted. Fifteen minutes on a bike, and a family doesn't go hungry tonight."</p>
-          <span>— SurplusAI volunteer</span>
-        </div>
-        <div class="tip-card">
-          <h4>On every run</h4>
-          <ul>
-            <li>Carry an insulated bag when you can, to keep food safely warm</li>
-            <li>Confirm the NGO contact by name on arrival</li>
-            <li>Mark the drop as complete so the Impact Agent can log it</li>
-            <li>Report any delay early — the ETA updates for everyone downstream</li>
-          </ul>
-        </div>
-      </div>
+    <div class="card" style="margin-top:20px;">
+      <h3>🚲 Want to join our volunteer riders?</h3>
+      <p class="portal-note">All you need is a bike, scooter or car and a couple of hours a week. Sign-up is quick and every run is logged so you can track your own running impact over time.</p>
     </div>
   </section>
 
@@ -296,7 +246,6 @@
 
     <div class="portal-banner portal-banner-wide">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sailors%20conduct%20community%20service%20project%20at%20The%20Food%20Bank%20Singapore%20141105-N-YU572-211.jpg" alt="A community food bank operating at scale" loading="lazy">
-      <div class="portal-banner-cap">Rescue operations, coordinated end-to-end</div>
     </div>
 
     <div class="impact-grid">
