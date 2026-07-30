@@ -46,15 +46,10 @@ header{
   position:sticky; top:0; z-index:50;
   flex-wrap:wrap; gap:12px;
 }
-.brand{ display:flex; align-items:center; gap:12px; }
-.brand-mark{
-  width:42px; height:42px; flex-shrink:0;
-  border-radius:14px; overflow:hidden;
-  box-shadow:0 6px 16px rgba(225,90,42,0.25);
-}
-.brand-mark img{ width:100%; height:100%; object-fit:cover; display:block; }
-.brand h1{ font-size:20px; }
-.brand span{ display:block; font-size:12px; color:var(--flare); font-weight:600; margin-top:2px; }
+.brand{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.brand-wordmark{ height:46px; width:auto; display:block; }
+.brand-tag{ font-size:12px; color:var(--flare); font-weight:600; }
+@media(max-width:520px){ .brand-tag{ display:none; } }
 
 .conn{ display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:600; color:var(--text-dim); }
 .conn .dot{ width:8px; height:8px; border-radius:50%; background:var(--danger); }
@@ -564,6 +559,8 @@ input:focus, select:focus{ outline:none; border-color:var(--flare); }
 }
 .footer-inner a{ color:var(--flare); text-decoration:none; font-weight:600; }
 .footer-inner a:hover{ color:var(--flare-deep); }
+.footer-brand{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.footer-brand img{ height:20px; width:auto; display:block; }
 
 .photo-strip{ max-width:1280px; margin:0 auto; padding:34px 28px 6px; }
 .photo-strip-inner{
