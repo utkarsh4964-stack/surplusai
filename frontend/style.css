@@ -122,7 +122,7 @@ nav button.active .tab-hint{ color:rgba(255,255,255,0.8); }
   display:none;
 }
 @media (min-width:860px){ .hero-photo{ display:block; } }
-.hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+.hero-photo img{ width:100%; height:100%; object-fit:cover; object-position:center 40%; display:block; }
 .hero-photo::after{
   content:''; position:absolute; inset:0;
   background:linear-gradient(to top, rgba(30,20,10,0.35), transparent 55%);
