@@ -114,7 +114,36 @@
           <option value="Mixed Meal">Mixed Meal</option>
           <option value="Bakery Items">Bakery Items</option>
           <option value="Packaged Snacks">Packaged Snacks</option>
+          <option value="Other" data-other-opt="1">Other (type below)</option>
         </select>
+        <div id="foodTypeOtherWrap" style="display:none;">
+          <input type="text" id="foodTypeOtherInput" placeholder="e.g. Dal Rice, Sandwiches, Fruit Crates…" maxlength="60">
+        </div>
+        <script>
+        (function(){
+          var sel = document.getElementById('foodType');
+          var wrap = document.getElementById('foodTypeOtherWrap');
+          var inp = document.getElementById('foodTypeOtherInput');
+          var otherOpt = sel.querySelector('[data-other-opt]');
+          function isOtherSelected(){
+            return sel.options[sel.selectedIndex] === otherOpt;
+          }
+          function sync(){
+            if(isOtherSelected()){
+              wrap.style.display = 'block';
+              inp.focus();
+              otherOpt.value = inp.value.trim() || 'Other';
+            } else {
+              wrap.style.display = 'none';
+              otherOpt.value = 'Other';
+            }
+          }
+          sel.addEventListener('change', sync);
+          inp.addEventListener('input', function(){
+            otherOpt.value = inp.value.trim() || 'Other';
+          });
+        })();
+        </script>
 
         <label>Quantity (meals / units)</label>
         <input type="number" id="quantity" value="40" min="1">
