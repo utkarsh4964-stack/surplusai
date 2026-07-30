@@ -180,6 +180,7 @@ input:focus, select:focus{ outline:none; border-color:var(--flare); }
 .checkline{ display:flex; align-items:center; gap:8px; margin-top:16px; }
 .checkline input{ width:auto; }
 .checkline label{ margin:0; text-transform:none; font-weight:500; }
+#foodTypeOtherWrap{ margin-top:10px; }
 
 .upload-box{
   margin-top:16px; border:2px dashed var(--line); border-radius:var(--radius-sm);
