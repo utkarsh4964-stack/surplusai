@@ -50,7 +50,6 @@
   </div>
 </section>
 
-
 <section class="photo-strip">
   <div class="eyebrow" style="max-width:1280px;margin:0 auto;padding:0 28px;">🌾 Real Rescues</div>
   <h2 class="page-title" style="max-width:1280px;margin:0 auto;padding:0 28px;margin-bottom:20px;">Our work, in photos</h2>
@@ -116,18 +115,22 @@
           <option value="Packaged Snacks">Packaged Snacks</option>
           <option value="Other" data-other-opt="1">Other (type below)</option>
         </select>
+
         <div id="foodTypeOtherWrap" style="display:none;">
           <input type="text" id="foodTypeOtherInput" placeholder="e.g. Dal Rice, Sandwiches, Fruit Crates…" maxlength="60">
         </div>
+
         <script>
         (function(){
           var sel = document.getElementById('foodType');
           var wrap = document.getElementById('foodTypeOtherWrap');
           var inp = document.getElementById('foodTypeOtherInput');
           var otherOpt = sel.querySelector('[data-other-opt]');
+
           function isOtherSelected(){
             return sel.options[sel.selectedIndex] === otherOpt;
           }
+
           function sync(){
             if(isOtherSelected()){
               wrap.style.display = 'block';
@@ -138,7 +141,9 @@
               otherOpt.value = 'Other';
             }
           }
+
           sel.addEventListener('change', sync);
+
           inp.addEventListener('input', function(){
             otherOpt.value = inp.value.trim() || 'Other';
           });
@@ -183,6 +188,7 @@
   <section class="view" id="view-ngo">
     <div class="eyebrow">🏠 NGO Partner Portal</div>
     <h2 class="page-title">Meals headed your way</h2>
+
     <div class="portal-banner">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Children%20at%20a%20rural%20school%20provided%20with%20lunch%20Uttar%20Pradesh%20India.jpg" alt="Children receiving a meal, Uttar Pradesh, India" loading="lazy">
     </div>
@@ -206,6 +212,7 @@
           <li>Keep your capacity and need level updated so future matches stay accurate.</li>
         </ul>
       </div>
+
       <div class="card">
         <h3>🔔 Incoming Donations</h3>
         <p class="portal-note">Read-only view for our NGO partners. Every donation the Matching Agent routes to you appears here the moment it's confirmed, sourced from the same live pipeline as the Donor Portal.</p>
@@ -222,6 +229,7 @@
   <section class="view" id="view-volunteer">
     <div class="eyebrow">🚲 Volunteer Portal</div>
     <h2 class="page-title">Your next delivery run</h2>
+
     <div class="portal-banner">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Meals%20on%20Wheels%20delivery.jpg" alt="Volunteer delivering a meal to a family" loading="lazy">
     </div>
@@ -245,6 +253,7 @@
           <li>Flag any delay early — the receiving NGO can see your live ETA either way.</li>
         </ul>
       </div>
+
       <div class="card">
         <h3>📋 Assigned Runs</h3>
         <p class="portal-note">This mirrors every run the Route Agent assigns you, live.</p>
@@ -264,6 +273,7 @@
         <div class="eyebrow">🌍 Impact Center</div>
         <h2 class="page-title" style="margin-bottom:0;">Our rescue network, live</h2>
       </div>
+
       <div class="system-meta">
         <span class="live-pill"><i class="pulse"></i><span id="adminLiveLabel">NETWORK ONLINE</span></span>
         <span id="lastUpdated">Updated just now</span>
@@ -275,10 +285,37 @@
     </div>
 
     <div class="impact-grid">
-      <div class="impact-card c-meals"><div class="impact-icon i-meals">🍽</div><div class="impact-body"><div class="num" id="statMeals">0</div><div class="lbl">Meals rescued</div></div></div>
-      <div class="impact-card c-people"><div class="impact-icon i-people">🤝</div><div class="impact-body"><div class="num" id="statPeople">0</div><div class="lbl">People fed</div></div></div>
-      <div class="impact-card c-waste"><div class="impact-icon i-waste">♻</div><div class="impact-body"><div class="num" id="statWaste">0<span style="font-size:15px">kg</span></div><div class="lbl">Food waste prevented</div></div></div>
-      <div class="impact-card c-co2"><div class="impact-icon i-co2">🌍</div><div class="impact-body"><div class="num" id="statCO2">0<span style="font-size:15px">kg</span></div><div class="lbl">CO₂ avoided</div></div></div>
+      <div class="impact-card c-meals">
+        <div class="impact-icon i-meals">🍽</div>
+        <div class="impact-body">
+          <div class="num" id="statMeals">0</div>
+          <div class="lbl">Meals rescued</div>
+        </div>
+      </div>
+
+      <div class="impact-card c-people">
+        <div class="impact-icon i-people">🤝</div>
+        <div class="impact-body">
+          <div class="num" id="statPeople">0</div>
+          <div class="lbl">People fed</div>
+        </div>
+      </div>
+
+      <div class="impact-card c-waste">
+        <div class="impact-icon i-waste">♻</div>
+        <div class="impact-body">
+          <div class="num" id="statWaste">0<span style="font-size:15px">kg</span></div>
+          <div class="lbl">Food waste prevented</div>
+        </div>
+      </div>
+
+      <div class="impact-card c-co2">
+        <div class="impact-icon i-co2">🌍</div>
+        <div class="impact-body">
+          <div class="num" id="statCO2">0<span style="font-size:15px">kg</span></div>
+          <div class="lbl">CO₂ avoided</div>
+        </div>
+      </div>
     </div>
 
     <div class="card" style="margin-bottom:20px;">
@@ -290,18 +327,21 @@
       <div class="card">
         <div class="map-head">
           <h3 style="margin-bottom:0;">Live Operations Map</h3>
+
           <div class="map-controls">
             <button type="button" class="map-control-btn" id="mapZoomOut">−</button>
             <button type="button" class="map-control-btn" id="mapZoomReset">1×</button>
             <button type="button" class="map-control-btn" id="mapZoomIn">+</button>
           </div>
         </div>
+
         <div class="map-filterbar">
           <button class="map-filter active" data-map-filter="restaurants">Restaurants</button>
           <button class="map-filter active" data-map-filter="ngos">NGOs</button>
           <button class="map-filter active" data-map-filter="volunteers">Volunteers</button>
           <button class="map-filter active" data-map-filter="routes">Routes</button>
         </div>
+
         <div class="map-wrap interactive" id="mapWrap">
           <div class="map-canvas" id="mapCanvas">
             <div class="map-gridline"></div>
@@ -310,8 +350,10 @@
             <div class="map-zone" style="left:8%;bottom:10%;">WEST ZONE</div>
             <div class="map-zone" style="right:8%;bottom:10%;">SOUTH ZONE</div>
           </div>
+
           <div class="map-popup" id="mapPopup"></div>
         </div>
+
         <div class="map-legend">
           <span><i class="dot-legend" style="background:var(--flare)"></i>Restaurant</span>
           <span><i class="dot-legend" style="background:var(--sage)"></i>Selected NGO</span>
@@ -330,13 +372,17 @@
 
     <div class="card match-panel" id="matchPanel">
       <h3>AI Match Explanation</h3>
+
       <div class="match-grid">
         <div class="match-winner" id="matchWinner">
           <p class="portal-note">The Matching Agent's reasoning will appear here after a donation is processed.</p>
         </div>
+
         <div>
           <h3 style="margin-bottom:8px;">Alternative NGO Rankings</h3>
-          <div class="rank-list" id="rankList"><div class="portal-note">Waiting for matching data.</div></div>
+          <div class="rank-list" id="rankList">
+            <div class="portal-note">Waiting for matching data.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -348,19 +394,27 @@
           <div class="portal-note">Agent events will appear here in real time.</div>
         </div>
       </div>
+
       <div class="card">
         <h3>Donation Log</h3>
-        <div id="donationLog"><div class="portal-note">No donations logged yet this session.</div></div>
+        <div id="donationLog">
+          <div class="portal-note">No donations logged yet this session.</div>
+        </div>
       </div>
     </div>
   </section>
-
 </main>
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <span class="footer-brand"><img src="assets/logo-wordmark.png" alt="Surplus AI"> — every meal deserves a second chance. Built for <strong style="color:var(--text)">HackAgentAIx</strong></span>
-    <a href="https://github.com/utkarsh4964-stack/surplusai" target="_blank" rel="noopener">View source on GitHub →</a>
+    <span class="footer-brand">
+      <img src="assets/logo-wordmark.png" alt="Surplus AI">
+      — every meal deserves a second chance.
+    </span>
+
+    <a href="https://github.com/utkarsh4964-stack/surplusai" target="_blank" rel="noopener">
+      View source on GitHub →
+    </a>
   </div>
 </footer>
 
@@ -379,29 +433,60 @@
       <div class="demo-subtitle">See how one surplus-food donation moves through the AI rescue network.</div>
     </div>
 
-    <div class="demo-progress"><span id="demoProgress"></span></div>
+    <div class="demo-progress">
+      <span id="demoProgress"></span>
+    </div>
 
     <div class="demo-stage">
       <div class="demo-step-number" id="demoStepNumber">Step 1 of 7</div>
       <div class="demo-step-icon" id="demoStepIcon">🍱</div>
       <div class="demo-step-title" id="demoStepTitle">Donation received</div>
+
       <div class="demo-step-detail" id="demoStepDetail">
         A restaurant has registered 40 fresh vegetarian meals that would otherwise become food waste.
       </div>
-      <div class="demo-status"><i class="status-dot"></i><span id="demoStatus">Processing live workflow</span></div>
+
+      <div class="demo-status">
+        <i class="status-dot"></i>
+        <span id="demoStatus">Processing live workflow</span>
+      </div>
 
       <div class="demo-route" id="demoRoute" style="display:none;">
         <div class="demo-route-line"></div>
-        <div class="demo-route-point start"><div class="point-icon">🔴</div><span>Restaurant</span></div>
-        <div class="demo-route-point mid"><div class="point-icon">🚚</div><span>Volunteer</span></div>
-        <div class="demo-route-point end"><div class="point-icon">🟢</div><span>NGO</span></div>
+
+        <div class="demo-route-point start">
+          <div class="point-icon">🔴</div>
+          <span>Restaurant</span>
+        </div>
+
+        <div class="demo-route-point mid">
+          <div class="point-icon">🚚</div>
+          <span>Volunteer</span>
+        </div>
+
+        <div class="demo-route-point end">
+          <div class="point-icon">🟢</div>
+          <span>NGO</span>
+        </div>
+
         <div class="demo-truck" id="demoTruck">🚚</div>
       </div>
 
       <div class="demo-stats" id="demoStats" style="display:none;">
-        <div class="demo-stat"><div class="value">+40</div><div class="label">Meals Rescued</div></div>
-        <div class="demo-stat"><div class="value">+40</div><div class="label">People Fed</div></div>
-        <div class="demo-stat"><div class="value">+8kg</div><div class="label">Waste Prevented</div></div>
+        <div class="demo-stat">
+          <div class="value">+40</div>
+          <div class="label">Meals Rescued</div>
+        </div>
+
+        <div class="demo-stat">
+          <div class="value">+40</div>
+          <div class="label">People Fed</div>
+        </div>
+
+        <div class="demo-stat">
+          <div class="value">+8kg</div>
+          <div class="label">Waste Prevented</div>
+        </div>
       </div>
 
       <div class="demo-complete" id="demoComplete">
@@ -416,7 +501,9 @@
     <div class="demo-actions">
       <button type="button" class="btn btn-primary" id="demoNext">Start Demo</button>
       <button type="button" class="btn btn-outline" id="demoRestart" style="display:none;">↻ Run Again</button>
-      <button type="button" class="btn btn-outline" id="demoExplore">Explore Admin Dashboard</button>
+      <button type="button" class="btn btn-outline" id="demoExplore">
+        Explore Admin Dashboard
+      </button>
     </div>
   </div>
 </div>
