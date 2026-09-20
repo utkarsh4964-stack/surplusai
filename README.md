@@ -421,8 +421,5 @@ SurplusAI demonstrates how autonomous AI systems can solve meaningful real-world
 
 ---
 
-# 👥 Team
-
-Built for **HackAgentAIx** as an exploration of autonomous multi-agent systems for social impact.
 
 **Every meal deserves a second chance.**
