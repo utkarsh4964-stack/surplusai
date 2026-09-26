@@ -1,0 +1,34 @@
+[
+  {
+    "id": "inst-001",
+    "name": "Green Valley Institutional Kitchen",
+    "type": "kitchen",
+    "capacity_kg": 500,
+    "location": { "lat": 28.535, "lng": 77.391 },
+    "historical_records": [
+      { "date": "2026-09-20", "produced_kg": 300, "consumed_kg": 260 },
+      { "date": "2026-09-21", "produced_kg": 310, "consumed_kg": 255 },
+      { "date": "2026-09-22", "produced_kg": 305, "consumed_kg": 270 },
+      { "date": "2026-09-23", "produced_kg": 320, "consumed_kg": 265 },
+      { "date": "2026-09-24", "produced_kg": 315, "consumed_kg": 280 },
+      { "date": "2026-09-25", "produced_kg": 330, "consumed_kg": 275 },
+      { "date": "2026-09-26", "produced_kg": 325, "consumed_kg": 290 }
+    ]
+  },
+  {
+    "id": "inst-002",
+    "name": "Sunrise Food Processing Unit",
+    "type": "processing_unit",
+    "capacity_kg": 2000,
+    "location": { "lat": 28.612, "lng": 77.229 },
+    "historical_records": [
+      { "date": "2026-09-20", "produced_kg": 1400, "consumed_kg": 1250 },
+      { "date": "2026-09-21", "produced_kg": 1450, "consumed_kg": 1260 },
+      { "date": "2026-09-22", "produced_kg": 1420, "consumed_kg": 1300 },
+      { "date": "2026-09-23", "produced_kg": 1500, "consumed_kg": 1310 },
+      { "date": "2026-09-24", "produced_kg": 1480, "consumed_kg": 1330 },
+      { "date": "2026-09-25", "produced_kg": 1520, "consumed_kg": 1340 },
+      { "date": "2026-09-26", "produced_kg": 1510, "consumed_kg": 1360 }
+    ]
+  }
+]
