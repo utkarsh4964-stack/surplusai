@@ -23,6 +23,7 @@
       <button class="tab-btn active" data-view="restaurant">🍽 Donor</button>
       <button class="tab-btn" data-view="ngo">🏠 NGO Partner</button>
       <button class="tab-btn" data-view="volunteer">🚲 Volunteer</button>
+      <button class="tab-btn" data-view="institution">🏭 Institutions</button>
       <button class="tab-btn" data-view="admin">🌍 Impact Center<span class="tab-hint">full view</span></button>
     </nav>
   </div>
@@ -264,6 +265,34 @@
     <div class="card" style="margin-top:20px;">
       <h3>🚲 Want to join our volunteer riders?</h3>
       <p class="portal-note">All you need is a bike, scooter or car and a couple of hours a week. Sign-up is quick and every run is logged so you can track your own running impact over time.</p>
+    </div>
+  </section>
+
+  <section class="view" id="view-institution">
+    <div class="eyebrow">🏭 Institution Dashboard</div>
+    <h2 class="page-title">Kitchens &amp; processing units, forecast to ESG</h2>
+    <p class="portal-intro">Beyond one-off restaurant donations, SurplusAI now watches institutional kitchens and food processing units continuously — forecasting demand before surplus happens, catching storage and machine issues from live sensor data, and rolling everything into an ESG-ready sustainability report.</p>
+
+    <div class="card">
+      <h3>Select an institution</h3>
+      <select id="institutionSelect"><option value="">Loading institutions…</option></select>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:20px;">
+      <div class="card">
+        <h3>📈 Demand Forecast <span class="badge" id="forecastTrendBadge" style="margin-left:auto"></span></h3>
+        <div id="forecastPanel"><div class="portal-note">Select an institution to see its forecast.</div></div>
+      </div>
+
+      <div class="card">
+        <h3>📡 Processing &amp; Storage Status</h3>
+        <div id="processingPanel"><div class="portal-note">Select an institution to see live sensor status.</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>🌍 Sustainability / ESG Report</h3>
+      <div id="sustainabilityPanel"><div class="portal-note">Select an institution to generate its ESG report.</div></div>
     </div>
   </section>
 
