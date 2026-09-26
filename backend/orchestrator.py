@@ -31,12 +31,24 @@ from agents.processing_monitor_agent import processing_monitor_agent
 from agents.sustainability_agent import sustainability_agent
 
 
-def run_pipeline(payload: dict, has_photo: bool, image_bytes: int, force_reject: bool) -> dict:
+def run_pipeline(
+    payload: dict,
+    has_photo: bool,
+    image_bytes: int,
+    force_reject: bool,
+    image_base64: str | None = None,
+) -> dict:
     state = new_ticket_state(payload)
 
     state = donation_agent.run(state)
 
-    state = quality_agent.run(state, has_photo=has_photo, image_bytes=image_bytes, force_reject=force_reject)
+    state = quality_agent.run(
+        state,
+        has_photo=has_photo,
+        image_bytes=image_bytes,
+        force_reject=force_reject,
+        image_base64=image_base64,
+    )
     if state["status"] == "rejected":
         return state   # edge: Quality Agent fail -> pipeline halts here
 
