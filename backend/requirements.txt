@@ -1,3 +1,10 @@
 fastapi==0.115.0
 uvicorn==0.30.6
 pydantic==2.9.2
+
+# Optional - only needed if you enable live integrations below.
+# The app runs fine without them: Quality Agent and Route Agent both
+# fall back to their original heuristic/formula logic when these are
+# absent or unconfigured.
+anthropic==0.39.0      # Quality Agent: real Claude Vision freshness scoring
+googlemaps==4.10.0     # Route Agent: real Google Maps Directions ETA
