@@ -68,8 +68,136 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view === 'institution') loadInstitutions();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Institution Dashboard — demand forecast, processing/IoT status, ESG report
+// ---------------------------------------------------------------------------
+let INSTITUTIONS_CACHE = [];
+let institutionsLoaded = false;
+
+const MOCK_INSTITUTIONS = [
+  { id: "inst-001", name: "Green Valley Institutional Kitchen", type: "kitchen" },
+  { id: "inst-002", name: "Sunrise Food Processing Unit", type: "processing_unit" },
+];
+
+async function loadInstitutions(){
+  if(institutionsLoaded) return;
+  institutionsLoaded = true;
+  const sel = document.getElementById('institutionSelect');
+
+  try{
+    if(DEMO_MODE) throw new Error('demo mode');
+    INSTITUTIONS_CACHE = await (await fetchWithTimeout(API_BASE + '/institutions')).json();
+  }catch(e){
+    INSTITUTIONS_CACHE = MOCK_INSTITUTIONS;
+  }
+
+  sel.innerHTML = INSTITUTIONS_CACHE.map(i =>
+    `<option value="${i.id}">${i.name} (${i.type === 'processing_unit' ? 'Processing Unit' : 'Kitchen'})</option>`
+  ).join('');
+
+  if(INSTITUTIONS_CACHE.length){
+    loadInstitutionData(INSTITUTIONS_CACHE[0].id);
+  }
+
+  sel.addEventListener('change', () => loadInstitutionData(sel.value));
+}
+
+async function loadInstitutionData(institutionId){
+  if(!institutionId) return;
+  renderForecast(null, true);
+  renderProcessing(null, true);
+  renderSustainability(null, true);
+
+  if(DEMO_MODE){
+    renderForecast(mockForecast());
+    renderProcessing(mockProcessing());
+    renderSustainability(mockSustainability());
+    return;
+  }
+
+  try{
+    const forecast = await (await fetchWithTimeout(`${API_BASE}/forecast/${institutionId}`)).json();
+    renderForecast(forecast);
+  }catch(e){ renderForecast(mockForecast()); }
+
+  try{
+    const processing = await (await fetchWithTimeout(`${API_BASE}/processing/status/${institutionId}`)).json();
+    renderProcessing(processing);
+  }catch(e){ renderProcessing(mockProcessing()); }
+
+  try{
+    const sustainability = await (await fetchWithTimeout(`${API_BASE}/sustainability/report/${institutionId}?donation_kg=40`)).json();
+    renderSustainability(sustainability);
+  }catch(e){ renderSustainability(mockSustainability()); }
+}
+
+function mockForecast(){
+  return { predicted_demand_kg: 279.3, predicted_surplus_kg: 42.4, confidence: 0.98, trend: "rising", method: "exp_smoothing (demo)" };
+}
+function mockProcessing(){
+  return { storage_excursions: 1, machine_downtime_events: 1, energy_alerts: 0, overproduction_kg: 45.7, total_energy_kwh: 36.5, efficiency_score: 0.82 };
+}
+function mockSustainability(){
+  return {
+    meals_rescued: 100, food_waste_prevented_kg: 40, co2_avoided_kg: 100, waste_prevention_pct: 94.4,
+    resource_efficiency_index: 0.71,
+    esg_summary: {
+      environmental: "100 kg CO2e avoided; 40 kg food diverted from landfill.",
+      social: "~100 meals made available to NGOs/shelters this cycle.",
+      governance: "Resource efficiency index 0.71 (processing efficiency 0.82, overproduction 45.7 kg)."
+    }
+  };
+}
+
+const TREND_LABEL = { rising: "↑ Rising", falling: "↓ Falling", stable: "→ Stable" };
+
+function renderForecast(data, loading){
+  const panel = document.getElementById('forecastPanel');
+  const badge = document.getElementById('forecastTrendBadge');
+  if(loading){ panel.innerHTML = '<div class="portal-note">Loading forecast…</div>'; badge.textContent=''; return; }
+  badge.textContent = TREND_LABEL[data.trend] || '';
+  panel.innerHTML = `
+    <div class="metric-row"><span>Predicted demand</span><strong>${data.predicted_demand_kg} kg</strong></div>
+    <div class="metric-row"><span>Predicted surplus</span><strong>${data.predicted_surplus_kg} kg</strong></div>
+    <div class="metric-row"><span>Forecast confidence</span><strong>${Math.round(data.confidence*100)}%</strong></div>
+    <p class="portal-note" style="margin-top:10px;">Method: ${data.method}</p>
+  `;
+}
+
+function renderProcessing(data, loading){
+  const panel = document.getElementById('processingPanel');
+  if(loading){ panel.innerHTML = '<div class="portal-note">Loading sensor status…</div>'; return; }
+  const flagClass = (n) => n > 0 ? 'flag-warn' : 'flag-ok';
+  panel.innerHTML = `
+    <div class="metric-row"><span>Storage excursions</span><strong class="${flagClass(data.storage_excursions)}">${data.storage_excursions}</strong></div>
+    <div class="metric-row"><span>Machine downtime events</span><strong class="${flagClass(data.machine_downtime_events)}">${data.machine_downtime_events}</strong></div>
+    <div class="metric-row"><span>Energy alerts</span><strong class="${flagClass(data.energy_alerts)}">${data.energy_alerts}</strong></div>
+    <div class="metric-row"><span>Overproduction</span><strong>${data.overproduction_kg} kg</strong></div>
+    <div class="metric-row"><span>Efficiency score</span><strong>${Math.round(data.efficiency_score*100)}%</strong></div>
+  `;
+}
+
+function renderSustainability(data, loading){
+  const panel = document.getElementById('sustainabilityPanel');
+  if(loading){ panel.innerHTML = '<div class="portal-note">Generating sustainability report…</div>'; return; }
+  panel.innerHTML = `
+    <div class="impact-grid" style="margin-bottom:16px;">
+      <div class="impact-card c-meals"><div class="impact-icon i-meals">🍽</div><div class="impact-body"><div class="num">${data.meals_rescued}</div><div class="lbl">Meals rescued</div></div></div>
+      <div class="impact-card c-waste"><div class="impact-icon i-waste">♻</div><div class="impact-body"><div class="num">${data.food_waste_prevented_kg}<span style="font-size:15px">kg</span></div><div class="lbl">Waste prevented</div></div></div>
+      <div class="impact-card c-co2"><div class="impact-icon i-co2">🌍</div><div class="impact-body"><div class="num">${data.co2_avoided_kg}<span style="font-size:15px">kg</span></div><div class="lbl">CO₂ avoided</div></div></div>
+      <div class="impact-card c-people"><div class="impact-icon i-people">📊</div><div class="impact-body"><div class="num">${Math.round(data.resource_efficiency_index*100)}%</div><div class="lbl">Resource efficiency</div></div></div>
+    </div>
+    <ul class="checklist">
+      <li><strong>Environmental —</strong> ${data.esg_summary.environmental}</li>
+      <li><strong>Social —</strong> ${data.esg_summary.social}</li>
+      <li><strong>Governance —</strong> ${data.esg_summary.governance}</li>
+    </ul>
+  `;
+}
 
 document.getElementById('pitchDismiss').addEventListener('click', ()=>{
   document.getElementById('pitchStrip').classList.add('hidden');
