@@ -94,11 +94,12 @@ def donate(req: DonationRequest):
         "pickup_time": req.pickup_time,
     }
 
-    result = run_pipeline(
+        result = run_pipeline(
         payload=payload,
         has_photo=has_photo,
         image_bytes=image_bytes,
         force_reject=req.force_reject,
+        image_base64=req.image_base64,
     )
     return result
 
