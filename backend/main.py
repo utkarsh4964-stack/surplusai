@@ -6,24 +6,35 @@ Run:
     uvicorn main:app --reload --port 8000
 
 Endpoints:
-    POST /donate          -> runs the full 7-agent pipeline, returns trace + result
-    GET  /impact           -> running session totals (for the Admin dashboard)
-    GET  /ngos               -> raw NGO dataset (for the Admin map)
-    GET  /health               -> liveness check
+    POST /donate                                   -> runs the full 7-agent pipeline, returns trace + result
+    GET  /impact                                     -> running session totals (for the Admin dashboard)
+    GET  /ngos                                         -> raw NGO dataset (for the Admin map)
+    GET  /institutions                                   -> registered institutions (kitchens / processing units)
+    GET  /forecast/{institution_id}                        -> demand/surplus forecast for one institution
+    GET  /processing/status/{institution_id}                 -> IoT/sensor anomaly + efficiency status
+    GET  /sustainability/report/{institution_id}?donation_kg=  -> ESG-style sustainability report
+    GET  /health                                                 -> liveness check
 """
 
 import base64
+import json
+import os
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from orchestrator import run_pipeline
+from orchestrator import (
+    run_pipeline,
+    run_forecast_only,
+    run_processing_check,
+    run_sustainability_report,
+)
 from agents.impact_agent import get_totals
 from agents.matching_agent import _load_ngos
 
-app = FastAPI(title="SurplusAI Backend", version="0.1.0")
+app = FastAPI(title="SurplusAI Backend", version="0.2.0")
 
 # demo-mode CORS: wide open so the static frontend file can call the API
 # from a file:// origin. Tighten this before any real deployment.
@@ -33,6 +44,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
+with open(os.path.join(_DATA_DIR, "institutions.json")) as f:
+    _INSTITUTIONS = {i["id"]: i for i in json.load(f)}
+
+with open(os.path.join(_DATA_DIR, "sensor_stream.json")) as f:
+    _SENSOR_STREAM = json.load(f)
 
 
 class DonationRequest(BaseModel):
@@ -82,3 +101,34 @@ def donate(req: DonationRequest):
         force_reject=req.force_reject,
     )
     return result
+
+
+@app.get("/institutions")
+def institutions():
+    return list(_INSTITUTIONS.values())
+
+
+@app.get("/forecast/{institution_id}")
+def forecast(institution_id: str):
+    institution = _INSTITUTIONS.get(institution_id)
+    if not institution:
+        raise HTTPException(404, "institution not found")
+    return run_forecast_only(institution)["forecast"]
+
+
+@app.get("/processing/status/{institution_id}")
+def processing_status(institution_id: str):
+    institution = _INSTITUTIONS.get(institution_id)
+    if not institution:
+        raise HTTPException(404, "institution not found")
+    readings = _SENSOR_STREAM.get(institution_id, [])
+    return run_processing_check(institution, readings)["processing_flags"]
+
+
+@app.get("/sustainability/report/{institution_id}")
+def sustainability_report(institution_id: str, donation_kg: float = 0.0):
+    institution = _INSTITUTIONS.get(institution_id)
+    if not institution:
+        raise HTTPException(404, "institution not found")
+    readings = _SENSOR_STREAM.get(institution_id, [])
+    return run_sustainability_report(institution, readings, donation_kg)["sustainability_report"]
