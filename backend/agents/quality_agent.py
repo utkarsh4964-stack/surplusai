@@ -6,10 +6,12 @@ Scores freshness/spoilage risk for a donation.
 Two modes, same output shape:
 
 1. Vision mode (used automatically when a photo is submitted AND
-   ANTHROPIC_API_KEY is set in the environment): sends the image to
-   Claude's vision API with a structured freshness-assessment prompt and
-   parses a 0-100 score + spoilage flags from the response. This is the
-   "image-based quality assessment" the problem statement asks for.
+   GROQ_API_KEY is set in the environment): sends the image to Groq's
+   vision model (qwen/qwen3.8-27b) with a structured freshness-assessment
+   prompt and parses a 0-100 score + spoilage flags from the response.
+   This is the "image-based quality assessment" the problem statement
+   asks for. Groq's free tier makes this the cheapest real path to a
+   working vision check.
 
 2. Heuristic mode (fallback): the original deterministic scoring based on
    photo presence, image size, and category risk. Used when there's no
@@ -20,7 +22,6 @@ Two modes, same output shape:
 Both modes feed the same threshold/rejection logic below them.
 """
 
-import base64
 import json
 import os
 
@@ -33,7 +34,7 @@ CATEGORY_RISK = {
     "Packaged": 15,
 }
 
-ANTHROPIC_MODEL = os.environ.get("QUALITY_AGENT_MODEL", "claude-3-5-sonnet-20241022")
+GROQ_MODEL = os.environ.get("QUALITY_AGENT_MODEL", "qwen/qwen3.8-27b")
 
 _VISION_PROMPT = """You are a food safety inspector for a food-rescue platform.
 Look at this photo of a food donation (category: {category}).
@@ -57,17 +58,17 @@ def _heuristic_score(has_photo: bool, image_bytes: int, category: str) -> int:
 
 def _vision_score(image_base64: str, category: str):
     """
-    Calls Claude's vision API to assess the photo directly.
+    Calls Groq's vision model to assess the photo directly.
     Returns None (never raises) if the API key is missing, the package
     isn't installed, or the call fails for any reason - the caller falls
     back to the heuristic in that case.
     """
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return None
 
     try:
-        import anthropic
+        from groq import Groq
     except ImportError:
         return None
 
@@ -76,27 +77,25 @@ def _vision_score(image_base64: str, category: str):
     if image_base64.startswith("data:"):
         header = image_base64.split(";")[0]
         media_type = header.split(":")[-1] or media_type
+    data_url = f"data:{media_type};base64,{raw}"
 
     try:
-        client = anthropic.Anthropic(api_key=api_key)
-        response = client.messages.create(
-            model=ANTHROPIC_MODEL,
-            max_tokens=300,
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            model=GROQ_MODEL,
             messages=[{
                 "role": "user",
                 "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": raw}},
                     {"type": "text", "text": _VISION_PROMPT.format(category=category)},
+                    {"type": "image_url", "image_url": {"url": data_url}},
                 ],
             }],
+            temperature=0.2,
+            max_completion_tokens=300,
+            response_format={"type": "json_object"},
         )
-        text = "".join(block.text for block in response.content if getattr(block, "type", None) == "text")
-        text = text.strip()
-        if text.startswith("```"):
-            text = text.strip("`")
-            if text.startswith("json"):
-                text = text[4:]
-        parsed = json.loads(text.strip())
+        text = completion.choices[0].message.content.strip()
+        parsed = json.loads(text)
         score = int(parsed["freshness_score"])
         return {
             "freshness_score": max(0, min(score, 100)),
@@ -122,7 +121,7 @@ def run(state: dict, has_photo: bool, image_bytes: int, force_reject: bool, imag
             freshness = vision_result["freshness_score"]
             flags = vision_result["spoilage_flags"]
             flag_note = f" Flags: {', '.join(flags)}." if flags else ""
-            source_note = f"Claude Vision assessment.{flag_note} {vision_result['reasoning']}".strip()
+            source_note = f"Groq vision assessment.{flag_note} {vision_result['reasoning']}".strip()
         else:
             freshness = _heuristic_score(has_photo, image_bytes, category)
             source_note = (
