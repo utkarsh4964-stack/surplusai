@@ -1,0 +1,14 @@
+{
+  "inst-001": [
+    { "timestamp": "2026-09-27T06:00:00", "storage_temp_c": 5.4, "storage_humidity_pct": 58, "machine_status": "running", "energy_kwh": 10.2 },
+    { "timestamp": "2026-09-27T09:00:00", "storage_temp_c": 6.1, "storage_humidity_pct": 60, "machine_status": "running", "energy_kwh": 11.5 },
+    { "timestamp": "2026-09-27T12:00:00", "storage_temp_c": 9.2, "storage_humidity_pct": 66, "machine_status": "running", "energy_kwh": 14.8 },
+    { "timestamp": "2026-09-27T15:00:00", "storage_temp_c": 6.5, "storage_humidity_pct": 59, "machine_status": "down", "energy_kwh": 0.0 }
+  ],
+  "inst-002": [
+    { "timestamp": "2026-09-27T06:00:00", "storage_temp_c": 4.8, "storage_humidity_pct": 52, "machine_status": "running", "energy_kwh": 40.0 },
+    { "timestamp": "2026-09-27T09:00:00", "storage_temp_c": 5.0, "storage_humidity_pct": 53, "machine_status": "running", "energy_kwh": 42.5 },
+    { "timestamp": "2026-09-27T12:00:00", "storage_temp_c": 5.1, "storage_humidity_pct": 54, "machine_status": "running", "energy_kwh": 41.0 },
+    { "timestamp": "2026-09-27T15:00:00", "storage_temp_c": 5.3, "storage_humidity_pct": 55, "machine_status": "idle", "energy_kwh": 5.0 }
+  ]
+}
