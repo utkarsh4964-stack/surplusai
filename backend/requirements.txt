@@ -6,5 +6,5 @@ pydantic==2.9.2
 # The app runs fine without them: Quality Agent and Route Agent both
 # fall back to their original heuristic/formula logic when these are
 # absent or unconfigured.
-anthropic==0.39.0      # Quality Agent: real Claude Vision freshness scoring
+groq==0.11.0           # Quality Agent: real Groq vision freshness scoring (free tier)
 googlemaps==4.10.0     # Route Agent: real Google Maps Directions ETA
