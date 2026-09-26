@@ -1,76 +1,68 @@
 """
 Orchestrator
 ------------
-Runs the full SurplusAI agent pipeline over a shared state dict.
+Runs the 7 agents in sequence, threading a single state dict through each.
+Structured deliberately like a LangGraph StateGraph (nodes + edges) so
+swapping in real LangGraph later is a rename, not a rewrite - see NOTE
+at the bottom.
 
-Assumes each existing agent module exposes a function named
-`<name>_agent(state: dict) -> dict`, matching the pattern used by the
-new agents (demand_forecast_agent, processing_monitor_agent,
-sustainability_agent). If your existing agents export differently named
-functions (e.g. `run()` or a class), rename the imports below to match —
-only the import lines and the calls in run_pipeline() need adjusting.
+Also exposes 3 lightweight, institution-level entry points used by the
+demand-forecast / processing-monitor / sustainability-ESG endpoints added
+for PS 26234 (institutional kitchens & food processing units). These run
+on a separate, institution-scoped state shape — they do NOT feed into the
+donation ticket pipeline below, since a /donate submission has no
+institution_id, historical_records, or sensor_readings attached to it.
 """
 
-from __future__ import annotations
 from typing import Any
 
+from agents import (
+    donation_agent,
+    quality_agent,
+    expiry_agent,
+    matching_agent,
+    routing_agent,
+    notification_agent,
+    impact_agent,
+)
+from agents.state import new_ticket_state
 from agents.demand_forecast_agent import demand_forecast_agent
-from agents.donation_agent import donation_agent
 from agents.processing_monitor_agent import processing_monitor_agent
-from agents.quality_agent import quality_agent
-from agents.expiry_agent import expiry_agent
-from agents.matching_agent import matching_agent
-from agents.routing_agent import routing_agent
-from agents.notification_agent import notification_agent
-from agents.sustainability_agent import sustainability_agent  # replaces impact_agent
+from agents.sustainability_agent import sustainability_agent
 
 
-def run_pipeline(initial_state: dict[str, Any]) -> dict[str, Any]:
-    """
-    Executes all agents in sequence on a shared state dict, mutating and
-    passing it forward. Each stage's output becomes the next stage's input.
-    """
-    state = initial_state
+def run_pipeline(payload: dict, has_photo: bool, image_bytes: int, force_reject: bool) -> dict:
+    state = new_ticket_state(payload)
 
-    # 1. Forecast expected demand/surplus for the institution before
-    #    processing this donation, so downstream agents can compare
-    #    actuals against prediction.
-    state = demand_forecast_agent(state)
+    state = donation_agent.run(state)
 
-    # 2. Normalize the incoming donation into a structured record.
-    state = donation_agent(state)
+    state = quality_agent.run(state, has_photo=has_photo, image_bytes=image_bytes, force_reject=force_reject)
+    if state["status"] == "rejected":
+        return state   # edge: Quality Agent fail -> pipeline halts here
 
-    # 3. Pull in IoT/sensor telemetry and flag storage/machine issues.
-    #    Sets state["quality_risk_flag"] if a storage temperature
-    #    breach occurred, which quality_agent should check.
-    state = processing_monitor_agent(state)
-
-    # 4. Assess food safety/freshness (vision + heuristic), now aware
-    #    of any processing-side risk flags.
-    state = quality_agent(state)
-
-    # 5. Predict remaining safe consumption window.
-    state = expiry_agent(state)
-
-    # 6. Score and select the best-matching NGO.
-    state = matching_agent(state)
-
-    # 7. Plan pickup/delivery logistics.
-    state = routing_agent(state)
-
-    # 8. Notify restaurant/institution, NGO, and volunteer.
-    state = notification_agent(state)
-
-    # 9. Compute sustainability/ESG metrics for this cycle
-    #    (replaces the old impact_agent step).
-    state = sustainability_agent(state)
+    state = expiry_agent.run(state)
+    state = matching_agent.run(state)
+    state = routing_agent.run(state)
+    state = notification_agent.run(state)
+    state = impact_agent.run(state)
 
     return state
 
+# NOTE: to migrate to real LangGraph, define each agent as a node
+# (`graph.add_node("quality", quality_agent.run)`), add a conditional edge
+# from "quality" -> END when state["status"] == "rejected", otherwise ->
+# "expiry", and chain the rest linearly. The agent functions themselves
+# don't need to change since they already take/return the shared state dict.
+
+
+# ---------------------------------------------------------------------------
+# Institution-level entry points (PS 26234: demand forecasting, IoT/processing
+# monitoring, ESG/sustainability reporting for kitchens & processing units)
+# ---------------------------------------------------------------------------
 
 def run_forecast_only(institution: dict[str, Any]) -> dict[str, Any]:
-    """Lightweight path for the /forecast/{id} endpoint — no donation yet."""
-    state = {"institution": institution}
+    """Used by GET /forecast/{institution_id}."""
+    state: dict[str, Any] = {"institution": institution}
     state = demand_forecast_agent(state)
     return state
 
@@ -78,8 +70,8 @@ def run_forecast_only(institution: dict[str, Any]) -> dict[str, Any]:
 def run_processing_check(
     institution: dict[str, Any], sensor_readings: list[dict[str, Any]]
 ) -> dict[str, Any]:
-    """Lightweight path for /processing/status/{id}."""
-    state = {"institution": institution, "sensor_readings": sensor_readings}
+    """Used by GET /processing/status/{institution_id}."""
+    state: dict[str, Any] = {"institution": institution, "sensor_readings": sensor_readings}
     state = demand_forecast_agent(state)
     state = processing_monitor_agent(state)
     return state
@@ -90,8 +82,8 @@ def run_sustainability_report(
     sensor_readings: list[dict[str, Any]],
     donation_kg: float = 0.0,
 ) -> dict[str, Any]:
-    """Lightweight path for /sustainability/report/{id}."""
-    state = {
+    """Used by GET /sustainability/report/{institution_id}."""
+    state: dict[str, Any] = {
         "institution": institution,
         "sensor_readings": sensor_readings,
         "donation": {"quantity_kg": donation_kg},
