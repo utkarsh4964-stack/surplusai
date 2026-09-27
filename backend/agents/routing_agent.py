@@ -1,7 +1,7 @@
 """
 Route Agent
 -----------
-Picks the fastest available volunteer for the winning NGO and computes an
+Picks the best available volunteer for the winning NGO and computes an
 ETA between the volunteer's location and the NGO.
 
 Two modes, same output shape:
@@ -18,9 +18,15 @@ Two modes, same output shape:
    installed, or the API call fails for any reason (network, quota,
    invalid coordinates) - a live demo should never break because an
    external API hiccupped.
+
+Volunteer selection: picks the available volunteer with the lowest
+estimated ETA to the NGO (distance / speed), not simply the volunteer
+with the highest top speed - a fast rider halfway across town is often
+slower door-to-door than a slower rider next door.
 """
 
 import json
+import math
 import os
 from .state import log_step
 
@@ -28,6 +34,12 @@ _DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "volunteers.j
 
 RUSH_HOURS = {8, 9, 18, 19, 20}
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
+
+# Vehicles that are actually human-powered - only these should ever be
+# routed with Google Maps' "bicycling" mode. Motorized two-wheelers
+# (Scooter, Bike meaning motorbike in this dataset's context, etc.) get
+# "driving" so ETAs reflect real road/traffic speed, not cycling speed.
+NON_MOTORIZED_VEHICLES = {"Cycle", "Bicycle"}
 
 
 def _load_volunteers():
@@ -41,6 +53,33 @@ def _traffic_multiplier(pickup_time: str) -> float:
     except (ValueError, IndexError):
         hour = 20
     return 1.4 if hour in RUSH_HOURS else 1.1
+
+
+def _haversine_km(lat1, lng1, lat2, lng2) -> float:
+    R = 6371.0
+    dlat, dlng = math.radians(lat2 - lat1), math.radians(lng2 - lng1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlng / 2) ** 2
+    )
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def _pick_best_volunteer(volunteers: list, ngo: dict):
+    """Choose the available volunteer with the lowest straight-line-based
+    ETA to the NGO, not just the fastest vehicle. Returns None if no
+    volunteer is available."""
+    if not volunteers:
+        return None
+    if "lat" not in ngo or "lng" not in ngo:
+        # no coordinates to compare against - fall back to fastest vehicle
+        return max(volunteers, key=lambda v: v["speed_kmph"])
+
+    def est_minutes(v):
+        dist = _haversine_km(v["lat"], v["lng"], ngo["lat"], ngo["lng"])
+        return (dist / max(v["speed_kmph"], 1)) * 60
+
+    return min(volunteers, key=est_minutes)
 
 
 def _live_route(volunteer: dict, ngo: dict):
@@ -61,7 +100,7 @@ def _live_route(volunteer: dict, ngo: dict):
 
     try:
         client = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
-        mode = "bicycling" if volunteer.get("vehicle") in ("Bike", "Scooter") else "driving"
+        mode = "bicycling" if volunteer.get("vehicle") in NON_MOTORIZED_VEHICLES else "driving"
         result = client.directions(
             origin=(volunteer["lat"], volunteer["lng"]),
             destination=(ngo["lat"], ngo["lng"]),
@@ -84,10 +123,21 @@ def run(state: dict) -> dict:
     ngo = state["matching"]["winner"]
     pickup_time = state["donation"]["pickup_time"]
 
-    # fastest effective volunteer = highest speed among available
-    volunteer = max(volunteers, key=lambda v: v["speed_kmph"])
-    multiplier = _traffic_multiplier(pickup_time)
+    volunteer = _pick_best_volunteer(volunteers, ngo)
 
+    if volunteer is None:
+        state["routing"] = {"volunteer": None, "eta_minutes": None, "method": "none"}
+        log_step(
+            state,
+            agent="Route Agent",
+            detail="No volunteers currently available - donation matched but pickup is unassigned. "
+                   "Restaurant/NGO notified to arrange pickup manually.",
+            status="warn",
+            stamp="Unassigned",
+        )
+        return state
+
+    multiplier = _traffic_multiplier(pickup_time)
     live = _live_route(volunteer, ngo)
 
     if live is not None:
