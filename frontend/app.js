@@ -449,7 +449,8 @@ function renderDelivery(result){
   if(!list) return;
   if(list.querySelector('.portal-note')) list.innerHTML='';
   const winner=result.matching.winner;
-  const volunteer=result.routing.volunteer.name;
+  const volunteer=result.routing.volunteer ? result.routing.volunteer.name : 'Unassigned';
+  const etaLabel = result.routing.eta_minutes != null ? `${result.routing.eta_minutes} min` : 'pending';
   activeDelivery={
     winnerId:winner.id,
     volunteer,
@@ -463,7 +464,7 @@ function renderDelivery(result){
   card.innerHTML=`
     <div class="delivery-top"><span class="delivery-id">${result.ticket_id}</span><span class="delivery-status">● En route</span></div>
     <div class="delivery-main">🍱 ${result.donation.quantity} × ${result.donation.food_type}</div>
-    <div class="delivery-route">🔴 Restaurant → 🚚 ${volunteer} → 🟢 ${winner.name}<br>ETA: ${result.routing.eta_minutes} min</div>
+    <div class="delivery-route">🔴 Restaurant → 🚚 ${volunteer} → 🟢 ${winner.name}<br>ETA: ${etaLabel}</div>
     <div class="delivery-progress"><span></span></div>`;
   card.addEventListener('click',()=>focusDelivery(winner.id));
   list.prepend(card);
@@ -671,7 +672,11 @@ async function renderResult(result, usedMock){
       addActivity('🎯',`<b>Matching Agent selected ${result.matching.winner.name}</b> with a ${Math.round(result.matching.winner.score*100)}% match score.`);
     }
     if(step.agent === 'Route Agent' && result.routing){
-      addActivity('🚚',`<b>Route Agent assigned ${result.routing.volunteer.name}</b> — ETA ${result.routing.eta_minutes} min.`);
+      if(result.routing.volunteer){
+        addActivity('🚚',`<b>Route Agent assigned ${result.routing.volunteer.name}</b> — ETA ${result.routing.eta_minutes} min.`);
+      } else {
+        addActivity('🚚',`<b>Route Agent</b> — no volunteer available, pickup unassigned.`);
+      }
     }
     await sleep(250);
   }
@@ -735,14 +740,16 @@ function addFeed(result){
   if(ngoFeed.querySelector('.portal-note')) ngoFeed.innerHTML='';
   const row = document.createElement('div');
   row.className='log-row';
-  row.innerHTML = `<span><span class="badge">${result.ticket_id}</span>${result.donation.quantity} × ${result.donation.food_type} arriving from Restaurant</span><span class="log-time">via ${result.routing.volunteer.name}</span>`;
+  const volunteerLabel = result.routing.volunteer ? `via ${result.routing.volunteer.name}` : 'volunteer unassigned';
+  row.innerHTML = `<span><span class="badge">${result.ticket_id}</span>${result.donation.quantity} × ${result.donation.food_type} arriving from Restaurant</span><span class="log-time">${volunteerLabel}</span>`;
   ngoFeed.prepend(row);
 
   const volFeed = document.getElementById('volFeed');
   if(volFeed.querySelector('.portal-note')) volFeed.innerHTML='';
   const vrow = document.createElement('div');
   vrow.className='log-row';
-  vrow.innerHTML = `<span><span class="badge">${result.ticket_id}</span>Deliver ${result.donation.quantity} × ${result.donation.food_type} to ${result.matching.winner.name}</span><span class="log-time">ETA ${result.routing.eta_minutes} min</span>`;
+  const etaLabel = result.routing.eta_minutes != null ? `ETA ${result.routing.eta_minutes} min` : 'unassigned';
+  vrow.innerHTML = `<span><span class="badge">${result.ticket_id}</span>Deliver ${result.donation.quantity} × ${result.donation.food_type} to ${result.matching.winner.name}</span><span class="log-time">${etaLabel}</span>`;
   volFeed.prepend(vrow);
 }
 
